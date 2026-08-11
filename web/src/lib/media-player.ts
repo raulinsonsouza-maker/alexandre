@@ -1,5 +1,3 @@
-import { prisma } from "@/lib/prisma";
-
 /** Detecta URL de player Mux / stream e monta src seguro. */
 export function resolveLessonMedia(videoUrl: string | null | undefined, videoPath: string | null | undefined) {
   if (videoPath) {

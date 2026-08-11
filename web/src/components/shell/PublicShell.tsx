@@ -57,18 +57,16 @@ export function PublicHeader({
         <div className="flex items-center gap-2">
           {signedIn ? (
             <>
-              <Link href="/academia" className="rounded-md bg-[#f6b40a] px-3 py-2 text-sm font-bold text-[#0a0a0c]">
-                Entrar na Academia
+              <Link
+                href={isAdmin ? "/administracao" : "/academia"}
+                className="rounded-md bg-[#f6b40a] px-3 py-2 text-sm font-bold text-[#0a0a0c]"
+              >
+                {isAdmin ? "Administração" : "Minha Academia"}
               </Link>
-              {isAdmin && (
-                <Link href="/administracao" className="hidden text-sm text-[#A8A8AF] hover:text-white sm:inline">
-                  Administração
-                </Link>
-              )}
             </>
           ) : (
             <Link href="/conta/entrar" className="rounded-md bg-[#f6b40a] px-3 py-2 text-sm font-bold text-[#0a0a0c]">
-              Entrar na Academia
+              Entrar
             </Link>
           )}
           <button

@@ -72,10 +72,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         token.mustResetPassword = Boolean(user.mustResetPassword);
       }
+      // Tokens criados via encode no /api/auth/login já trazem role/id
+      if (!token.role && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { mustResetPassword: true, active: true, role: true },
+        });
+        if (!dbUser?.active) {
+          return { ...token, id: undefined };
+        }
+        token.mustResetPassword = dbUser.mustResetPassword;
+        token.role = dbUser.role;
+      }
       if (trigger === "update" && session?.mustResetPassword === false) {
         token.mustResetPassword = false;
       }
-      // Revalida só enquanto a troca for obrigatória
       if (token.id && token.mustResetPassword) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },

@@ -1,40 +1,98 @@
 import { NextResponse } from "next/server";
-import { AuthError } from "next-auth";
-import { signIn } from "@/lib/auth";
+import bcrypt from "bcryptjs";
+import { encode } from "@auth/core/jwt";
+import { prisma } from "@/lib/prisma";
 
-function safeCallbackUrl(raw: string | null | undefined) {
-  if (!raw) return "/academia";
-  const url = raw.trim();
-  if (!url.startsWith("/") || url.startsWith("//")) return "/academia";
-  if (url.startsWith("/conta/entrar") || url.startsWith("/api/")) return "/academia";
-  return url;
+const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
+
+function homeForRole(role: string, mustResetPassword: boolean) {
+  if (mustResetPassword) return "/conta/trocar-senha";
+  if (role === "ADMIN") return "/administracao";
+  return "/academia";
 }
 
-/** Login via POST clássico (evita Server Actions quebrados atrás de Cloudflare/Traefik). */
-export async function POST(req: Request) {
+async function readCredentials(req: Request) {
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    const body = await req.json().catch(() => ({}));
+    return {
+      email: String(body.email || "")
+        .trim()
+        .toLowerCase(),
+      password: String(body.password || ""),
+    };
+  }
   const form = await req.formData();
-  const email = String(form.get("email") || "")
-    .trim()
-    .toLowerCase();
-  const password = String(form.get("password") || "");
-  const callbackUrl = safeCallbackUrl(String(form.get("callbackUrl") || ""));
+  return {
+    email: String(form.get("email") || "")
+      .trim()
+      .toLowerCase(),
+    password: String(form.get("password") || ""),
+  };
+}
+
+function sessionCookieName(secure: boolean) {
+  return secure ? "__Secure-authjs.session-token" : "authjs.session-token";
+}
+
+/** Login unificado: grava sessão e devolve destino por papel (ADMIN → admin, aluno → academia). */
+export async function POST(req: Request) {
+  const { email, password } = await readCredentials(req);
+  const wantsJson = (req.headers.get("accept") || "").includes("application/json")
+    || (req.headers.get("content-type") || "").includes("application/json");
   const base = process.env.AUTH_URL || process.env.NEXTAUTH_URL || new URL(req.url).origin;
 
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: callbackUrl,
-    });
-  } catch (err) {
-    if (err instanceof AuthError) {
-      return NextResponse.redirect(
-        new URL(`/conta/entrar?error=1&callbackUrl=${encodeURIComponent(callbackUrl)}`, base),
-      );
-    }
-    // NEXT_REDIRECT do Auth.js
-    throw err;
+  if (!email || !password) {
+    if (wantsJson) return NextResponse.json({ ok: false, error: "missing" }, { status: 400 });
+    return NextResponse.redirect(new URL("/conta/entrar?error=1", base), 303);
   }
 
-  return NextResponse.redirect(new URL(callbackUrl, base));
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user?.active) {
+    if (wantsJson) return NextResponse.json({ ok: false, error: "invalid" }, { status: 401 });
+    return NextResponse.redirect(new URL("/conta/entrar?error=1", base), 303);
+  }
+
+  const ok = await bcrypt.compare(password, user.passwordHash);
+  if (!ok) {
+    if (wantsJson) return NextResponse.json({ ok: false, error: "invalid" }, { status: 401 });
+    return NextResponse.redirect(new URL("/conta/entrar?error=1", base), 303);
+  }
+
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    if (wantsJson) return NextResponse.json({ ok: false, error: "config" }, { status: 500 });
+    return NextResponse.redirect(new URL("/conta/entrar?error=1", base), 303);
+  }
+
+  const secure = base.startsWith("https://");
+  const cookieName = sessionCookieName(secure);
+  const token = await encode({
+    token: {
+      id: user.id,
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      mustResetPassword: user.mustResetPassword,
+    },
+    secret,
+    salt: cookieName,
+    maxAge: SESSION_MAX_AGE,
+  });
+
+  const dest = homeForRole(user.role, user.mustResetPassword);
+  const res = wantsJson
+    ? NextResponse.json({ ok: true, redirect: dest, role: user.role })
+    : NextResponse.redirect(new URL(dest, base), 303);
+
+  res.cookies.set(cookieName, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    secure,
+    maxAge: SESSION_MAX_AGE,
+  });
+
+  return res;
 }
