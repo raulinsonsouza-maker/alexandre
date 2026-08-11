@@ -5,6 +5,7 @@ FROM node:20-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY web/package.json web/package-lock.json ./
+COPY web/prisma ./prisma
 RUN npm ci
 
 FROM node:20-bookworm-slim AS builder
@@ -49,7 +50,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 RUN npm install --omit=dev prisma@6.19.3 tsx@4.23.11 @prisma/client@6.19.3 \
   && npx prisma generate \
   && mkdir -p /app/public/media /app/public/uploads \
-  && chown -R nextjs:nodejs /app/public /app/node_modules /app/prisma
+  && chown -R nextjs:nodejs /app/public /app/node_modules /app/prisma /app/src || true
 
 USER nextjs
 EXPOSE 3000
