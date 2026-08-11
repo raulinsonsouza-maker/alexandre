@@ -1,0 +1,57 @@
+# Dependencies / build
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+web/.env
+web/.env.local
+
+# Runtime / large media (sync via rsync to VPS)
+uploads/
+web/public/media/**
+!web/public/media/.gitkeep
+web/public/uploads/**
+!web/public/uploads/.gitkeep
+
+# Prototypes / local-only
+*.dc.html
+.thumbnail/
+.thumbnail
+_*.png
+gold-badget*.png
+index-standalone.html
+*.jsx
+cart.js
+cep-lookup.js
+doc-page.js
+image-slot.js
+animations-v2.jsx
+saas.js
+support.js
+validators.js
+Modulo.dc.html
+
+# Agent / IDE caches
+.agents/
+.claude/
+.windsurf/
+.cursor/
+.vscode/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CRM reference (not part of this deploy)
+crm-backend/

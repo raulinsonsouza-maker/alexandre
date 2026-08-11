@@ -1,0 +1,90 @@
+# Docker Swarm stack — Jornada SAP EWM (Alexandre)
+# Na VPS:
+#   set -a && source /opt/apps/alexandre/.env && set +a
+#   docker stack deploy -c deploy/stack.yml alexandre
+#
+# Build (na raiz do repo em /opt/apps/alexandre):
+#   docker build -t alexandre-web:latest -f web/Dockerfile .
+
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-alexandre}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-jornada_ewm}
+    volumes:
+      - alexandre_pgdata:/var/lib/postgresql/data
+    networks:
+      - alexandre_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+
+  web:
+    image: alexandre-web:latest
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      AUTH_SECRET: ${AUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://alexandre.symbius.com.br}
+      AUTH_URL: ${NEXTAUTH_URL:-https://alexandre.symbius.com.br}
+      APP_ENV: ${APP_ENV:-production}
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-demo}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-log}
+      CONTENT_PATH: /content/aulas-conteudo.json
+    volumes:
+      - /opt/apps/alexandre/data/media:/app/public/media
+      - /opt/apps/alexandre/data/uploads:/app/public/uploads
+    networks:
+      - alexandre_internal
+      - traefik_proxy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/conta/entrar"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_proxy
+        - traefik.http.routers.alexandre.rule=Host(`alexandre.symbius.com.br`)
+        - traefik.http.routers.alexandre.entrypoints=websecure
+        - traefik.http.routers.alexandre.tls=true
+        - traefik.http.routers.alexandre.tls.certresolver=letsencryptresolver
+        - traefik.http.services.alexandre.loadbalancer.server.port=3000
+        - traefik.http.routers.alexandre-http.rule=Host(`alexandre.symbius.com.br`)
+        - traefik.http.routers.alexandre-http.entrypoints=web
+        - traefik.http.routers.alexandre-http.middlewares=alexandre-https-redirect
+        - traefik.http.middlewares.alexandre-https-redirect.redirectscheme.scheme=https
+        - traefik.http.middlewares.alexandre-https-redirect.redirectscheme.permanent=true
+
+networks:
+  alexandre_internal:
+    driver: overlay
+  traefik_proxy:
+    external: true
+
+volumes:
+  alexandre_pgdata:

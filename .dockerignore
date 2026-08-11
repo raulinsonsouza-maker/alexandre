@@ -1,0 +1,17 @@
+# Context is repository root when building with -f web/Dockerfile
+.git
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+web/public/media
+web/public/uploads
+uploads
+crm-backend
+*.dc.html
+.thumbnail
+.agents
+.claude
+.windsurf
+.cursor
