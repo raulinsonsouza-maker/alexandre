@@ -1,7 +1,4 @@
-﻿import { signIn } from "@/lib/auth";
-import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+﻿import Link from "next/link";
 
 function safeCallbackUrl(raw: string | null | undefined) {
   if (!raw) return "/academia";
@@ -9,24 +6,6 @@ function safeCallbackUrl(raw: string | null | undefined) {
   if (!url.startsWith("/") || url.startsWith("//")) return "/academia";
   if (url.startsWith("/conta/entrar") || url.startsWith("/api/")) return "/academia";
   return url;
-}
-
-async function loginAction(formData: FormData) {
-  "use server";
-  const email = String(formData.get("email") || "")
-    .trim()
-    .toLowerCase();
-  const password = String(formData.get("password") || "");
-  const callbackUrl = safeCallbackUrl(String(formData.get("callbackUrl") || ""));
-
-  try {
-    await signIn("credentials", { email, password, redirectTo: callbackUrl });
-  } catch (err) {
-    if (err instanceof AuthError) {
-      redirect(`/conta/entrar?error=1&callbackUrl=${encodeURIComponent(callbackUrl)}`);
-    }
-    throw err;
-  }
 }
 
 export default async function LoginPage({
@@ -44,15 +23,15 @@ export default async function LoginPage({
       {sp.error && <p className="mt-4 text-sm text-red-400">Credenciais inválidas.</p>}
       {sp.registered && <p className="mt-4 text-sm text-[#F1C96B]">Conta criada. Faça login.</p>}
       {sp.reset && <p className="mt-4 text-sm text-[#F1C96B]">Senha atualizada. Faça login.</p>}
-      <form action={loginAction} className="mt-8 space-y-4">
+      <form action="/api/auth/login" method="post" className="mt-8 space-y-4">
         <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
           <label className="mb-1 block text-sm text-[#A8A8AF]">E-mail</label>
-          <input className="input" name="email" type="email" required />
+          <input className="input" name="email" type="email" required autoComplete="email" />
         </div>
         <div>
           <label className="mb-1 block text-sm text-[#A8A8AF]">Senha</label>
-          <input className="input" name="password" type="password" required />
+          <input className="input" name="password" type="password" required autoComplete="current-password" />
         </div>
         <button className="btn w-full" type="submit">
           Entrar
