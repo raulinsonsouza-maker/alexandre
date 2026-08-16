@@ -10,6 +10,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "cakto:sync": "tsx scripts/sync-cakto-plans.ts",
+    "cakto:style": "tsx scripts/style-cakto-checkouts.ts",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },

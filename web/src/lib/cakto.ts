@@ -70,6 +70,10 @@ export function caktoPost<T = unknown>(path: string, body: unknown) {
   return caktoFetch(path, { method: "POST", body: JSON.stringify(body) }) as Promise<T>;
 }
 
+export function caktoPut<T = unknown>(path: string, body: unknown) {
+  return caktoFetch(path, { method: "PUT", body: JSON.stringify(body) }) as Promise<T>;
+}
+
 export function payUrlForOffer(offerId: string) {
   return `https://pay.cakto.com.br/${offerId}`;
 }
