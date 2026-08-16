@@ -211,9 +211,9 @@ export function LandingHome({
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { tag: "Base", title: "Plano Base", desc: "Fundamentos e estrutura essencial do SAP EWM.", href: "/checkout?plan=base" },
-            { tag: "Pro", title: "Plano Pro", desc: "Processos principais do armazém e RF.", href: "/checkout?plan=pro", premium: true },
-            { tag: "Expert", title: "Plano Expert", desc: "Produção, TM, MFS e analytics.", href: "/checkout?plan=expert" },
+            { tag: "Base", title: "Plano Base", desc: "6 módulos · R$ 397 — fundamentos, estrutura e Warehouse Monitor.", href: "/checkout?plan=base" },
+            { tag: "Pro", title: "Plano Pro", desc: "28 módulos · R$ 697 — tudo do Base + processos, HU, RF e waves.", href: "/checkout?plan=pro", premium: true },
+            { tag: "Expert", title: "Plano Expert", desc: "45 módulos · R$ 1.497 — tudo do Pro + QM, produção, TM e MFS.", href: "/checkout?plan=expert" },
           ].map((t) => (
             <Link
               key={t.title}
@@ -239,7 +239,7 @@ export function LandingHome({
           ))}
         </div>
         <p className="mt-4 text-sm text-[#A8A8AF]">
-          Corporate sob consulta —{" "}
+          Corporate: mesmos 45 módulos + gestão de times, sob consulta —{" "}
           <Link href="/planos" className="text-[#F1C96B]">
             fale com o comercial
           </Link>

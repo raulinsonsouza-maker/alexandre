@@ -26,8 +26,8 @@ export default async function PlanosPage() {
           Escolha o pacote ideal
         </h1>
         <p className="mt-3 max-w-2xl text-[#a8a8a8]">
-          Base, Pro e Expert liberam conjuntos de módulos. Corporate é negociado com o time comercial via WhatsApp.
-          Também é possível comprar módulos avulsos na vitrine.
+          Planos cumulativos: o Pro inclui o Base, o Expert inclui o Pro. Corporate usa o mesmo conteúdo do Expert,
+          com gestão para times — sob consulta no WhatsApp. Também é possível comprar módulos avulsos na vitrine.
         </p>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">

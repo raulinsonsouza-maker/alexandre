@@ -7,20 +7,11 @@ import {
   MODULE_CODE_BY_INDEX,
   mediaUrl,
 } from "../src/data/catalog";
+import { moduleInPlan, PLAN_PRICES_CENTS } from "../src/data/plan-modules";
 
 const prisma = new PrismaClient();
 
 const WA = "https://wa.me/5511974389297?text=Ol%C3%A1%2C%20quero%20o%20plano%20Corporate";
-
-const BASE_CATS = new Set(["Boas-vindas e Fundamentos", "Estrutura e Master Data"]);
-const PRO_CATS = new Set([
-  ...BASE_CATS,
-  "Inbound",
-  "Outbound",
-  "Processos Internos do Armazém",
-  "Qualidade e Compliance",
-  "RF, Automação e Identificação",
-]);
 
 async function main() {
   const adminHash = await bcrypt.hash("Admin@2026", 12);
@@ -267,70 +258,66 @@ async function main() {
     {
       slug: "base",
       name: "Base",
-      goal: "Construir fundamento sólido em SAP EWM",
-      priceCents: 39700,
+      goal: "Para iniciantes em EWM — fundamento sólido, sem experiência prévia",
+      priceCents: PLAN_PRICES_CENTS.base,
       badge: null as string | null,
       bullets: [
-        "Fundamentos e arquitetura EWM",
-        "Estrutura, dados mestres e processos básicos",
-        "Introdução ao Warehouse Monitor",
+        "6 módulos: fundamentos, estrutura e dados mestres",
+        "Visão geral de inbound/outbound e Warehouse Monitor",
         "Certificado de conclusão",
+        "Ponto de partida para subir ao Pro",
       ],
       sortOrder: 1,
       checkoutEnabled: true,
       ctaUrl: null as string | null,
-      match: (cat: string | null) => !!cat && BASE_CATS.has(cat),
     },
     {
       slug: "pro",
       name: "Pro",
-      goal: "Dominar processos principais do EWM",
-      priceCents: 69700,
+      goal: "Dominar os processos principais do armazém no dia a dia",
+      priceCents: PLAN_PRICES_CENTS.pro,
       badge: "Mais recomendado",
       bullets: [
-        "Tudo do Base +",
-        "Inbound, outbound, HU, lotes e serial number",
-        "Wave Management e RF Framework",
+        "Tudo do Base + 22 módulos (28 no total)",
+        "Inbound, outbound, HU, lotes, serial e inventário",
+        "Wave Management, RF Framework e WT/WO",
         "Certificados por módulo",
       ],
       sortOrder: 2,
       checkoutEnabled: true,
       ctaUrl: null,
-      match: (cat: string | null) => !!cat && PRO_CATS.has(cat),
     },
     {
       slug: "expert",
       name: "Expert",
-      goal: "Aprofundar integrações, automação e cenários avançados",
-      priceCents: 149700,
+      goal: "Integrações, automação e cenários avançados de ponta a ponta",
+      priceCents: PLAN_PRICES_CENTS.expert,
       badge: "Maior profundidade técnica",
       bullets: [
-        "Tudo do Pro +",
-        "Quality, Production, TM, MFS e Analytics",
-        "Materiais premium e templates",
+        "Tudo do Pro + 17 módulos (45 no total)",
+        "QM, produção, TM, MFS, DAS e Analytics",
+        "RFID, Labor Management, Billing e migração WM→EWM",
         "Certificação avançada",
       ],
       sortOrder: 3,
       checkoutEnabled: true,
       ctaUrl: null,
-      match: () => true,
     },
     {
       slug: "corporate",
       name: "Corporate",
-      goal: "Capacitar times com gestão, trilhas e relatórios",
-      priceCents: 0,
+      goal: "Mesmos 45 módulos do Expert, com gestão para times",
+      priceCents: PLAN_PRICES_CENTS.corporate,
       badge: "Para empresas",
       bullets: [
-        "Múltiplos usuários e licenças",
-        "Trilhas por perfil profissional",
+        "Conteúdo técnico igual ao Expert",
+        "Licenças multiusuário e trilhas por perfil",
         "Dashboard, relatórios e certificados por colaborador",
-        "Proposta personalizada",
+        "Proposta personalizada (Retail, Farma, 3PL…)",
       ],
       sortOrder: 4,
       checkoutEnabled: false,
       ctaUrl: WA,
-      match: () => true,
     },
   ];
 
@@ -363,7 +350,7 @@ async function main() {
     });
 
     await prisma.planModule.deleteMany({ where: { planId: plan.id } });
-    const links = allModules.filter((m) => p.match(m.category)).map((m) => ({
+    const links = allModules.filter((m) => moduleInPlan(p.slug, m.code)).map((m) => ({
       planId: plan.id,
       moduleId: m.id,
     }));
