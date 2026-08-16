@@ -90,13 +90,33 @@ async function findPlan(data: NonNullable<CaktoPayload["data"]>) {
   return null;
 }
 
+async function findModule(data: NonNullable<CaktoPayload["data"]>) {
+  const productId = data.product?.id || data.product?.short_id;
+  const offerId = data.offer?.id;
+  if (productId) {
+    const byProduct = await prisma.module.findFirst({ where: { caktoProductId: String(productId) } });
+    if (byProduct) return byProduct;
+  }
+  if (offerId) {
+    const byOffer = await prisma.module.findFirst({ where: { caktoOfferId: String(offerId) } });
+    if (byOffer) return byOffer;
+  }
+  return null;
+}
+
 async function handleApproved(data: NonNullable<CaktoPayload["data"]>, caktoOrderId: string) {
   const email = String(data.customer?.email || "")
     .trim()
     .toLowerCase();
+
   const plan = await findPlan(data);
-  if (!plan) {
-    console.error("cakto: plano não encontrado", { product: data.product, offer: data.offer });
+  const mod = plan ? null : await findModule(data);
+
+  if (!plan && !mod) {
+    console.error("cakto: produto não encontrado (plano/módulo)", {
+      product: data.product,
+      offer: data.offer,
+    });
     return;
   }
 
@@ -111,42 +131,84 @@ async function handleApproved(data: NonNullable<CaktoPayload["data"]>, caktoOrde
   });
   if (alreadyPaid) return;
 
-  const pending = await prisma.order.findFirst({
-    where: {
-      userId: user.id,
-      status: "PENDING",
-      gateway: "cakto",
-      items: { some: { planId: plan.id } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  if (plan) {
+    const pending = await prisma.order.findFirst({
+      where: {
+        userId: user.id,
+        status: "PENDING",
+        gateway: "cakto",
+        items: { some: { planId: plan.id } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-  const orderId =
-    pending?.id ||
-    (
-      await prisma.order.create({
-        data: {
-          userId: user.id,
-          status: "PENDING",
-          paymentMethod: "PIX",
-          totalCents: plan.priceCents,
-          gateway: "cakto",
-          gatewayPaymentId: caktoOrderId,
-          items: {
-            create: [
-              {
-                planId: plan.id,
-                title: `Plano ${plan.name}`,
-                priceCents: plan.priceCents,
-                quantity: 1,
-              },
-            ],
+    const orderId =
+      pending?.id ||
+      (
+        await prisma.order.create({
+          data: {
+            userId: user.id,
+            status: "PENDING",
+            paymentMethod: "PIX",
+            totalCents: plan.priceCents,
+            gateway: "cakto",
+            gatewayPaymentId: caktoOrderId,
+            items: {
+              create: [
+                {
+                  planId: plan.id,
+                  title: `Plano ${plan.name}`,
+                  priceCents: plan.priceCents,
+                  quantity: 1,
+                },
+              ],
+            },
           },
-        },
-      })
-    ).id;
+        })
+      ).id;
 
-  await markOrderPaidAndEnroll({ orderId, gatewayPaymentId: caktoOrderId });
+    await markOrderPaidAndEnroll({ orderId, gatewayPaymentId: caktoOrderId });
+    return;
+  }
+
+  if (mod) {
+    const pending = await prisma.order.findFirst({
+      where: {
+        userId: user.id,
+        status: "PENDING",
+        gateway: "cakto",
+        items: { some: { moduleId: mod.id } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const orderId =
+      pending?.id ||
+      (
+        await prisma.order.create({
+          data: {
+            userId: user.id,
+            status: "PENDING",
+            paymentMethod: "PIX",
+            totalCents: mod.priceCents,
+            gateway: "cakto",
+            gatewayPaymentId: caktoOrderId,
+            items: {
+              create: [
+                {
+                  moduleId: mod.id,
+                  title: mod.title,
+                  priceCents: mod.priceCents,
+                  quantity: 1,
+                },
+              ],
+            },
+          },
+        })
+      ).id;
+
+    await markOrderPaidAndEnroll({ orderId, gatewayPaymentId: caktoOrderId });
+  }
 }
 
 async function handleRefund(caktoOrderId: string) {

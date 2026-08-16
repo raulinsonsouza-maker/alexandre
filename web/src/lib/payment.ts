@@ -257,6 +257,15 @@ export async function createCheckout(params: {
       await markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
       return { redirectUrl: "/academia?purchased=1" };
     }
+    if (paymentProvider() === "cakto") {
+      if (mod.priceCents <= 0) {
+        throw new Error("Este módulo é bônus e não possui checkout.");
+      }
+      if (!mod.caktoOfferId) {
+        throw new Error("Módulo ainda não vinculado à Cakto. Escolha um plano ou tente mais tarde.");
+      }
+      return { redirectUrl: payUrlForOffer(mod.caktoOfferId) };
+    }
     return { redirectUrl: `/checkout?module=${params.moduleSlug}&pending=1` };
   }
 

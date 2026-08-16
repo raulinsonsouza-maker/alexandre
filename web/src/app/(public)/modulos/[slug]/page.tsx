@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { userAlreadyHasModuleAccess } from "@/lib/access";
 import { ModuleLessons } from "@/components/landing/ModuleLessons";
+import { BuyModuleButton } from "@/components/checkout/BuyPlanModal";
 import { moduleCoverUrl } from "@/lib/media";
 
 function formatBRL(cents: number) {
@@ -56,11 +57,10 @@ export default async function ModuloPage({
 
   const cover = dbModule.coverPath || moduleCoverUrl(dbModule.code) || "/brand/gold-badge.png";
   const price = dbModule.priceCents;
-  const parcela = formatBRL(Math.round(price / 5));
-  const pix = formatBRL(Math.round(price * 0.9));
   const hasAccess =
     session?.user ? await userAlreadyHasModuleAccess(session.user.id, dbModule.id) : false;
-  const checkoutHref = `/checkout?module=${dbModule.slug}`;
+  const canBuyAvulso = price > 0 && Boolean(dbModule.caktoOfferId);
+  const isBonus = price <= 0;
 
   return (
     <div className="bg-[#0a0a0c] text-white">
@@ -86,20 +86,33 @@ export default async function ModuloPage({
           </p>
           <div className="mb-6 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wide text-[#9a9a9a]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#f6b40a]" />
-            Módulo avulso · {lessons.length} aulas · {formatBRL(price)}
+            {isBonus
+              ? `Bônus · ${lessons.length} aulas`
+              : `Módulo avulso · ${lessons.length} aulas · ${formatBRL(price)}`}
           </div>
           <div className="flex flex-wrap gap-3">
             {hasAccess ? (
-              <Link href="/academia" className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]">
-                Ir à Academia
-              </Link>
-            ) : (
               <Link
-                href={checkoutHref}
+                href="/academia"
                 className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
               >
-                Comprar módulo
+                Ir à Academia
               </Link>
+            ) : isBonus ? (
+              <Link
+                href="/planos"
+                className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
+              >
+                Incluído nos planos
+              </Link>
+            ) : (
+              <BuyModuleButton
+                loggedIn={Boolean(session?.user)}
+                moduleSlug={dbModule.slug}
+                moduleName={dbModule.title}
+                checkoutEnabled={canBuyAvulso}
+                label={canBuyAvulso ? "Comprar módulo" : "Ver planos"}
+              />
             )}
             <Link
               href="/planos"
@@ -108,6 +121,11 @@ export default async function ModuloPage({
               Ver planos
             </Link>
           </div>
+          {!hasAccess && !isBonus && !canBuyAvulso && (
+            <p className="mt-3 text-sm text-[#a8a8a8]">
+              Compra avulsa em preparação. Enquanto isso, veja os planos da jornada.
+            </p>
+          )}
         </div>
       </section>
 
@@ -132,26 +150,33 @@ export default async function ModuloPage({
         <section className="mx-auto max-w-[980px] px-[clamp(20px,4vw,56px)] py-[clamp(48px,7vw,88px)]">
           <div className="rounded-xl border border-[#f6b40a]/30 bg-gradient-to-br from-[#1c1706] to-[#141416] p-8">
             <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">
-              Invista neste módulo
+              {isBonus ? "Módulo bônus" : "Invista neste módulo"}
             </h2>
-            <div className="mt-4 flex flex-wrap items-end gap-4">
+            <div className="mt-4">
               <span className="font-[family-name:var(--font-display)] text-[clamp(36px,4.4vw,52px)] text-[#f6b40a]">
-                {formatBRL(price)}
+                {isBonus ? "Incluso" : formatBRL(price)}
               </span>
-              <div className="pb-2 text-sm text-[#a8a8a8]">
-                <div>ou 5x de {parcela}</div>
-                <div>Pix com 10% off: {pix}</div>
-              </div>
+              {!isBonus && (
+                <p className="mt-2 text-sm text-[#a8a8a8]">Pagamento na Cakto · Pix ou cartão</p>
+              )}
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
               {hasAccess ? (
                 <Link href="/academia" className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
                   Ir à Academia
                 </Link>
-              ) : (
-                <Link href={checkoutHref} className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
-                  Comprar Agora
+              ) : isBonus ? (
+                <Link href="/planos" className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
+                  Ver planos
                 </Link>
+              ) : (
+                <BuyModuleButton
+                  loggedIn={Boolean(session?.user)}
+                  moduleSlug={dbModule.slug}
+                  moduleName={dbModule.title}
+                  checkoutEnabled={canBuyAvulso}
+                  label={canBuyAvulso ? "Comprar agora" : "Ver planos"}
+                />
               )}
               <Link href="/planos" className="rounded border border-white/20 px-7 py-3 font-semibold text-white">
                 Ver planos

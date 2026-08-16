@@ -7,7 +7,15 @@ import {
   MODULE_CODE_BY_INDEX,
   mediaUrl,
 } from "../src/data/catalog";
+import { moduleCaktoPrice } from "../src/data/module-cakto-prices";
 import { moduleInPlan, PLAN_PRICES_CENTS } from "../src/data/plan-modules";
+
+function priceCentsForCode(code: string, catalogPrice?: number) {
+  const row = moduleCaktoPrice(code);
+  if (row) return row.priceCents;
+  if (typeof catalogPrice === "number") return Math.round(catalogPrice * 100);
+  return 31779;
+}
 
 const prisma = new PrismaClient();
 
@@ -124,7 +132,7 @@ async function main() {
         description: cat?.description || m.description || null,
         sortOrder: m.code === "M00" ? -1 : (cat?.index ?? i),
         published: true,
-        priceCents: m.code === "M00" ? 0 : (cat?.price ?? 297) * 100,
+        priceCents: priceCentsForCode(m.code, cat?.price),
         coverPath: cat ? mediaUrl(cat.file) : m.code === "M00" ? welcomeCover : null,
         category: cat?.category || (m.code === "M00" ? "Boas-vindas e Fundamentos" : null),
         featured: cat?.id === "warehouse-monitoring",
@@ -232,7 +240,7 @@ async function main() {
         description: item.description,
         sortOrder: item.index,
         published: true,
-        priceCents: item.price * 100,
+        priceCents: priceCentsForCode(code, item.price),
         coverPath: mediaUrl(item.file),
         category: item.category,
         featured: item.id === "warehouse-monitoring",

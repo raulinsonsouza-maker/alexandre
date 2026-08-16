@@ -10,6 +10,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "cakto:sync": "tsx scripts/sync-cakto-plans.ts",
+    "cakto:sync-modules": "tsx scripts/sync-cakto-modules.ts",
     "cakto:style": "tsx scripts/style-cakto-checkouts.ts",
     "cakto:repair": "tsx scripts/repair-cakto-sales.ts",
     "cakto:recreate": "tsx scripts/recreate-cakto-plans.ts",

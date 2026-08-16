@@ -50,7 +50,7 @@ export const PLAN_SALES: Record<
     ],
     steps: [
       { title: "Crie sua conta", text: "Nome, e-mail e senha. Use o mesmo e-mail do pagamento." },
-      { title: "Pague com segurança", text: "Pix, cartão ou boleto no checkout da Cakto." },
+      { title: "Pague com segurança", text: "Pix ou cartão no checkout da Cakto." },
       { title: "Estude no seu ritmo", text: "Com o pagamento aprovado, os 6 módulos abrem na Academia." },
     ],
     faq: [
@@ -101,7 +101,7 @@ export const PLAN_SALES: Record<
     ],
     steps: [
       { title: "Cadastro rápido", text: "Crie a conta com o e-mail que vai usar no pagamento." },
-      { title: "Pagamento seguro", text: "Pix, cartão ou boleto no checkout da Cakto." },
+      { title: "Pagamento seguro", text: "Pix ou cartão no checkout da Cakto." },
       { title: "Acesso liberado", text: "Pagamento aprovado → 28 módulos abertos na Academia." },
     ],
     faq: [
@@ -160,7 +160,7 @@ export const PLAN_SALES: Record<
     ],
     steps: [
       { title: "Reserve o Expert", text: "Crie a conta com o e-mail do pagamento." },
-      { title: "Checkout único", text: "Pix, cartão ou boleto na Cakto." },
+      { title: "Checkout único", text: "Pix ou cartão na Cakto." },
       { title: "Trilha inteira", text: "45 módulos na Academia, no seu ritmo, com certificado por módulo." },
     ],
     faq: [

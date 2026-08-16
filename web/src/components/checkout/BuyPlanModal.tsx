@@ -6,8 +6,9 @@ import Link from "next/link";
 export function BuyPlanModal(props: {
   open: boolean;
   onClose: () => void;
-  planSlug: string;
-  planName: string;
+  planSlug?: string;
+  moduleSlug?: string;
+  itemName: string;
   whatsappUrl?: string | null;
 }) {
   const [error, setError] = useState("");
@@ -16,15 +17,22 @@ export function BuyPlanModal(props: {
   if (!props.open) return null;
 
   async function startCheckout() {
+    const body = props.moduleSlug
+      ? { moduleSlug: props.moduleSlug }
+      : { planSlug: props.planSlug };
     const res = await fetch("/api/checkout/start", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       credentials: "include",
-      body: JSON.stringify({ planSlug: props.planSlug }),
+      body: JSON.stringify(body),
     });
     const data = await res.json().catch(() => null);
     if (!res.ok || !data?.url) {
-      throw new Error(data?.error === "corporate" ? "corporate" : data?.error || "Não foi possível iniciar o pagamento");
+      throw new Error(
+        data?.error === "corporate"
+          ? "corporate"
+          : data?.error || "Não foi possível iniciar o pagamento",
+      );
     }
     window.location.assign(data.url);
   }
@@ -71,14 +79,16 @@ export function BuyPlanModal(props: {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-[#f6b40a]">Criar conta</p>
-            <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold uppercase">{props.planName}</h2>
+            <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold uppercase">
+              {props.itemName}
+            </h2>
           </div>
           <button type="button" className="text-[#a8a8a8]" onClick={props.onClose} aria-label="Fechar">
             ✕
           </button>
         </div>
         <p className="mt-2 text-sm text-[#a8a8a8]">
-          Crie sua conta de aluno. Em seguida você vai ao pagamento com este mesmo e-mail.
+          Crie sua conta de aluno. Em seguida você vai ao pagamento Cakto (Pix ou cartão) com este mesmo e-mail.
         </p>
 
         {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
@@ -168,8 +178,83 @@ export function BuyPlanButton(props: {
         open={open}
         onClose={() => setOpen(false)}
         planSlug={props.planSlug}
-        planName={props.planName}
+        itemName={props.planName}
         whatsappUrl={props.whatsappUrl}
+      />
+    </>
+  );
+}
+
+export function BuyModuleButton(props: {
+  loggedIn: boolean;
+  moduleSlug: string;
+  moduleName: string;
+  checkoutEnabled: boolean;
+  label?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function goPay() {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ moduleSlug: props.moduleSlug }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.url) {
+        setError(typeof data?.error === "string" ? data.error : "Não foi possível iniciar o pagamento");
+        setLoading(false);
+        return;
+      }
+      window.location.assign(data.url);
+    } catch {
+      setError("Falha de conexão");
+      setLoading(false);
+    }
+  }
+
+  function onClick() {
+    if (!props.checkoutEnabled) return;
+    if (props.loggedIn) {
+      void goPay();
+      return;
+    }
+    setOpen(true);
+  }
+
+  if (!props.checkoutEnabled) {
+    return (
+      <Link
+        href="/planos"
+        className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
+      >
+        Ver planos
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c] disabled:opacity-60"
+        onClick={onClick}
+        disabled={loading}
+      >
+        {loading ? "Redirecionando…" : props.label || "Comprar módulo"}
+      </button>
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      <BuyPlanModal
+        open={open}
+        onClose={() => setOpen(false)}
+        moduleSlug={props.moduleSlug}
+        itemName={props.moduleName}
       />
     </>
   );

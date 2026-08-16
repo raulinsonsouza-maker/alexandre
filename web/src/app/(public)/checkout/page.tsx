@@ -11,7 +11,7 @@ function formatBRL(cents: number) {
 
 function providerLabel() {
   const p = process.env.PAYMENT_PROVIDER || "demo";
-  if (p === "cakto") return "Pagamento seguro na Cakto (Pix, cartão ou boleto). Use o mesmo e-mail desta conta.";
+  if (p === "cakto") return "Pagamento seguro na Cakto (Pix ou cartão). Use o mesmo e-mail desta conta.";
   if (p === "demo") return "Modo demonstração: o acesso é liberado automaticamente.";
   return `Gateway: ${p}`;
 }
@@ -101,8 +101,11 @@ export default async function CheckoutPage({
     moduleSlug = mod.slug;
     title = mod.title;
     priceCents = mod.priceCents;
-    if (provider === "cakto") {
-      blockedReason = "Compra de módulo avulso ainda não está disponível no checkout Cakto. Escolha um plano.";
+    caktoReady = provider !== "cakto" || Boolean(mod.caktoOfferId);
+    if (provider === "cakto" && mod.priceCents <= 0) {
+      blockedReason = "Este módulo é bônus e não possui checkout avulso. Escolha um plano.";
+    } else if (provider === "cakto" && !mod.caktoOfferId) {
+      blockedReason = "Compra avulsa deste módulo ainda não está disponível. Escolha um plano.";
     }
     if (session?.user && (await userAlreadyHasModuleAccess(session.user.id, mod.id))) {
       blockedReason = "Você já tem acesso a este módulo. Acesse o Campus.";
@@ -153,7 +156,9 @@ export default async function CheckoutPage({
           </Link>
         </div>
       ) : !caktoReady ? (
-        <p className="mt-6 text-sm text-red-400">Este plano ainda não está disponível para pagamento. Tente em instantes.</p>
+        <p className="mt-6 text-sm text-red-400">
+          Este item ainda não está disponível para pagamento. Tente em instantes ou escolha um plano.
+        </p>
       ) : !session?.user ? (
         <p className="mt-6 text-sm text-[#A8A8AF]">
           Faça{" "}

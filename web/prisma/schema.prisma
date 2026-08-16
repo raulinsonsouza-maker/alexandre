@@ -80,21 +80,23 @@ model Course {
 }
 
 model Module {
-  id            String   @id @default(cuid())
-  courseId      String
-  code          String
-  slug          String   @unique
-  title         String
-  description   String?
-  sortOrder     Int      @default(0)
-  published     Boolean  @default(false)
-  priceCents    Int      @default(29700)
-  coverPath     String?
-  category      String?
-  featured      Boolean  @default(false)
-  featuredOrder Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  courseId       String
+  code           String
+  slug           String   @unique
+  title          String
+  description    String?
+  sortOrder      Int      @default(0)
+  published      Boolean  @default(false)
+  priceCents     Int      @default(31779)
+  coverPath      String?
+  category       String?
+  featured       Boolean  @default(false)
+  featuredOrder  Int      @default(0)
+  caktoProductId String?
+  caktoOfferId   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons     Lesson[]
