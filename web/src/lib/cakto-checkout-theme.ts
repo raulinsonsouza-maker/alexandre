@@ -33,7 +33,7 @@ export function jornadaCheckoutSettings() {
         background: { color: grayBox },
       },
     },
-    font: { family: "Inter" },
+    font: { family: "Roboto" },
     form: { background: { color: panel } },
     icon: { color: gold },
     text: { color: { active: gold, primary: white, secondary: muted } },
@@ -82,7 +82,7 @@ function styleExtra(extra: Record<string, unknown> | undefined) {
     type: "chat",
     attributes: {
       ...((chat.attributes as Record<string, unknown>) || {}),
-      enabled: true,
+      enabled: false,
       provider: "whatsapp",
       accountId: "5511974389297",
     },
@@ -90,13 +90,42 @@ function styleExtra(extra: Record<string, unknown> | undefined) {
   return next;
 }
 
-function styleDevice(device: Record<string, unknown> | undefined) {
-  if (!device) return undefined;
+function fallbackLayout() {
   return {
-    ...device,
-    extra: styleExtra(device.extra as Record<string, unknown> | undefined),
+    rows: [
+      {
+        id: "369db380-d652-4b4f-bf0e-31710f1cfc03",
+        type: "row",
+        layout: [12],
+        columns: [
+          {
+            id: "e0253c14-37ea-47f7-b77a-e260cb814a6f",
+            type: "column",
+            components: [
+              {
+                id: "cff7c565-5957-4330-be70-b804878827dd",
+                type: "checkout",
+                attributes: {},
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function hasCheckoutBlock(device: Record<string, unknown> | undefined) {
+  return JSON.stringify(device || {}).includes('"checkout"');
+}
+
+function styleDevice(device: Record<string, unknown> | undefined) {
+  const src = device && hasCheckoutBlock(device) ? device : fallbackLayout();
+  return {
+    ...src,
+    extra: styleExtra(src.extra as Record<string, unknown> | undefined),
     settings: {
-      ...((device.settings as object) || {}),
+      ...((src.settings as object) || {}),
       ...jornadaCheckoutSettings(),
     },
   };
@@ -105,27 +134,9 @@ function styleDevice(device: Record<string, unknown> | undefined) {
 /** Mescla o tema da academia no config atual (mobile + desktop). */
 export function applyJornadaCheckoutTheme(config: Record<string, unknown> | null | undefined) {
   const base = { ...(config || {}) };
-  const mobile = styleDevice((base.mobile as Record<string, unknown>) || undefined);
-  const desktop = styleDevice((base.desktop as Record<string, unknown>) || undefined);
-  if (mobile) base.mobile = mobile;
-  if (desktop) base.desktop = desktop;
-  if (!base.mobile && !base.desktop) {
-    base.mobile = styleDevice({
-      rows: [
-        {
-          id: "checkout-main",
-          type: "row",
-          layout: [12],
-          columns: [
-            {
-              id: "checkout-col",
-              type: "column",
-              components: [{ id: "checkout-form", type: "checkout", attributes: {} }],
-            },
-          ],
-        },
-      ],
-    });
-  }
+  const mobile = styleDevice(base.mobile as Record<string, unknown> | undefined);
+  const desktop = styleDevice(base.desktop as Record<string, unknown> | undefined);
+  base.mobile = mobile;
+  base.desktop = desktop;
   return base;
 }
