@@ -120,7 +120,7 @@ function hasCheckoutBlock(device: Record<string, unknown> | undefined) {
 }
 
 function styleDevice(device: Record<string, unknown> | undefined) {
-  const src = device && hasCheckoutBlock(device) ? device : fallbackLayout();
+  const src = (device && hasCheckoutBlock(device) ? device : fallbackLayout()) as Record<string, unknown>;
   return {
     ...src,
     extra: styleExtra(src.extra as Record<string, unknown> | undefined),
