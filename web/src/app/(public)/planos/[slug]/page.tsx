@@ -6,16 +6,14 @@ import { PLAN_SALES, PLAN_SALES_SLUGS, type PlanSalesSlug } from "@/data/plan-sa
 import { PRO_MODULE_CODES } from "@/data/plan-modules";
 import { BuyPlanButton } from "@/components/checkout/BuyPlanModal";
 
+export const dynamic = "force-dynamic";
+
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function isSlug(value: string): value is PlanSalesSlug {
   return (PLAN_SALES_SLUGS as string[]).includes(value);
-}
-
-export function generateStaticParams() {
-  return PLAN_SALES_SLUGS.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
