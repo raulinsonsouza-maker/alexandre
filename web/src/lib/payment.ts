@@ -2,7 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/lib/audit";
 import { purchaseEmailHtml, sendEmail } from "@/lib/email";
 import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/access";
+import { payUrlForOffer } from "@/lib/cakto";
 import { nanoid } from "nanoid";
+
+function paymentProvider() {
+  return process.env.PAYMENT_PROVIDER || "demo";
+}
 
 async function applyCoupon(code: string | undefined, total: number) {
   if (!code) return { total, couponCode: undefined as string | undefined };
@@ -122,13 +127,57 @@ export async function markOrderPaidAndEnroll(params: {
   return updated;
 }
 
-export async function createDemoCheckout(params: {
+export async function markOrderRefundedAndRevoke(params: {
+  orderId: string;
+  gatewayPaymentId?: string;
+}) {
+  const order = await prisma.order.findUnique({
+    where: { id: params.orderId },
+    include: { items: true },
+  });
+  if (!order) return null;
+  if (order.status === "REFUNDED") return order;
+
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: "REFUNDED",
+        gatewayPaymentId: params.gatewayPaymentId || order.gatewayPaymentId,
+      },
+      include: { items: true },
+    });
+    for (const item of updated.items) {
+      if (item.planId) {
+        await tx.enrollment.updateMany({
+          where: { userId: order.userId, planId: item.planId, status: "ACTIVE" },
+          data: { status: "REVOKED" },
+        });
+      }
+      if (item.moduleId) {
+        await tx.enrollment.updateMany({
+          where: { userId: order.userId, moduleId: item.moduleId, status: "ACTIVE" },
+          data: { status: "REVOKED" },
+        });
+      }
+      if (item.courseId) {
+        await tx.enrollment.updateMany({
+          where: { userId: order.userId, courseId: item.courseId, status: "ACTIVE" },
+          data: { status: "REVOKED" },
+        });
+      }
+    }
+    return updated;
+  });
+}
+
+export async function createCheckout(params: {
   userId: string;
   planSlug?: string;
   moduleSlug?: string;
   courseId?: string;
   couponCode?: string;
-}) {
+}): Promise<{ redirectUrl: string }> {
   if (params.planSlug) {
     const plan = await prisma.plan.findUnique({ where: { slug: params.planSlug } });
     if (!plan || !plan.published || !plan.checkoutEnabled) {
@@ -146,8 +195,8 @@ export async function createDemoCheckout(params: {
         paymentMethod: "PIX",
         totalCents: total,
         couponCode,
-        gateway: process.env.PAYMENT_PROVIDER || "demo",
-        idempotencyKey: `demo_${nanoid()}`,
+        gateway: paymentProvider(),
+        idempotencyKey: `${paymentProvider()}_${nanoid()}`,
         items: {
           create: [
             {
@@ -161,10 +210,17 @@ export async function createDemoCheckout(params: {
       },
     });
 
-    if ((process.env.PAYMENT_PROVIDER || "demo") === "demo") {
-      return markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+    if (paymentProvider() === "demo") {
+      await markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+      return { redirectUrl: "/academia?purchased=1" };
     }
-    return order;
+    if (paymentProvider() === "cakto") {
+      if (!plan.caktoOfferId) {
+        throw new Error("Plano ainda não vinculado à Cakto. Tente novamente em instantes.");
+      }
+      return { redirectUrl: payUrlForOffer(plan.caktoOfferId) };
+    }
+    return { redirectUrl: `/checkout?plan=${params.planSlug}&pending=1` };
   }
 
   if (params.moduleSlug) {
@@ -182,8 +238,8 @@ export async function createDemoCheckout(params: {
         paymentMethod: "PIX",
         totalCents: total,
         couponCode,
-        gateway: process.env.PAYMENT_PROVIDER || "demo",
-        idempotencyKey: `demo_${nanoid()}`,
+        gateway: paymentProvider(),
+        idempotencyKey: `${paymentProvider()}_${nanoid()}`,
         items: {
           create: [
             {
@@ -197,10 +253,11 @@ export async function createDemoCheckout(params: {
       },
     });
 
-    if ((process.env.PAYMENT_PROVIDER || "demo") === "demo") {
-      return markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+    if (paymentProvider() === "demo") {
+      await markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+      return { redirectUrl: "/academia?purchased=1" };
     }
-    return order;
+    return { redirectUrl: `/checkout?module=${params.moduleSlug}&pending=1` };
   }
 
   // Legado: curso completo
@@ -219,8 +276,8 @@ export async function createDemoCheckout(params: {
       paymentMethod: "PIX",
       totalCents: total,
       couponCode,
-      gateway: process.env.PAYMENT_PROVIDER || "demo",
-      idempotencyKey: `demo_${nanoid()}`,
+      gateway: paymentProvider(),
+      idempotencyKey: `${paymentProvider()}_${nanoid()}`,
       items: {
         create: [
           {
@@ -234,8 +291,11 @@ export async function createDemoCheckout(params: {
     },
   });
 
-  if ((process.env.PAYMENT_PROVIDER || "demo") === "demo") {
-    return markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+  if (paymentProvider() === "demo") {
+    await markOrderPaidAndEnroll({ orderId: order.id, gatewayPaymentId: `demo_${nanoid()}` });
+    return { redirectUrl: "/academia?purchased=1" };
   }
-  return order;
+  return { redirectUrl: "/academia?purchased=1" };
 }
+
+export const createDemoCheckout = createCheckout;

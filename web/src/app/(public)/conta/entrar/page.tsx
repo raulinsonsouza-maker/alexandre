@@ -1,21 +1,28 @@
 ﻿import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { safeCallbackUrl } from "@/lib/callback-url";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; registered?: string; reset?: string }>;
+  searchParams: Promise<{ error?: string; registered?: string; reset?: string; callbackUrl?: string }>;
 }) {
   const session = await auth();
+  const sp = await searchParams;
+  const next = safeCallbackUrl(sp.callbackUrl);
+
   if (session?.user) {
     if (session.user.mustResetPassword) redirect("/conta/trocar-senha");
     if (session.user.role === "ADMIN") redirect("/administracao");
-    redirect("/academia");
+    redirect(next || "/academia");
   }
 
-  const sp = await searchParams;
+  const cadastroHref = next
+    ? `/conta/cadastro?callbackUrl=${encodeURIComponent(next)}`
+    : "/conta/cadastro";
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
@@ -24,13 +31,15 @@ export default async function LoginPage({
       {sp.error && <p className="mt-4 text-sm text-red-400">Credenciais inválidas.</p>}
       {sp.registered && <p className="mt-4 text-sm text-[#F1C96B]">Conta criada. Faça login.</p>}
       {sp.reset && <p className="mt-4 text-sm text-[#F1C96B]">Senha atualizada. Faça login.</p>}
-      <LoginForm />
+      <Suspense>
+        <LoginForm />
+      </Suspense>
       <p className="mt-4 text-sm text-[#A8A8AF]">
         <Link href="/conta/recuperar-senha" className="text-[#F1C96B]">
           Esqueci a senha
         </Link>
         {" · "}
-        <Link href="/conta/cadastro" className="text-[#F1C96B]">
+        <Link href={cadastroHref} className="text-[#F1C96B]">
           Criar conta
         </Link>
       </p>

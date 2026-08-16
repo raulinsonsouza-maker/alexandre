@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "";
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -24,6 +26,7 @@ export function LoginForm() {
         body: JSON.stringify({
           email: String(fd.get("email") || ""),
           password: String(fd.get("password") || ""),
+          callbackUrl,
         }),
       });
       const data = await res.json().catch(() => null);

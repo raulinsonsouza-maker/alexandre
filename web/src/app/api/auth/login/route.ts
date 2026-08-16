@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { encode } from "@auth/core/jwt";
 import { prisma } from "@/lib/prisma";
+import { safeCallbackUrl } from "@/lib/callback-url";
 
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
@@ -20,6 +21,7 @@ async function readCredentials(req: Request) {
         .trim()
         .toLowerCase(),
       password: String(body.password || ""),
+      callbackUrl: String(body.callbackUrl || ""),
     };
   }
   const form = await req.formData();
@@ -28,6 +30,7 @@ async function readCredentials(req: Request) {
       .trim()
       .toLowerCase(),
     password: String(form.get("password") || ""),
+    callbackUrl: String(form.get("callbackUrl") || ""),
   };
 }
 
@@ -37,7 +40,7 @@ function sessionCookieName(secure: boolean) {
 
 /** Login unificado: grava sessão e devolve destino por papel (ADMIN → admin, aluno → academia). */
 export async function POST(req: Request) {
-  const { email, password } = await readCredentials(req);
+  const { email, password, callbackUrl } = await readCredentials(req);
   const wantsJson = (req.headers.get("accept") || "").includes("application/json")
     || (req.headers.get("content-type") || "").includes("application/json");
   const base = process.env.AUTH_URL || process.env.NEXTAUTH_URL || new URL(req.url).origin;
@@ -81,7 +84,12 @@ export async function POST(req: Request) {
     maxAge: SESSION_MAX_AGE,
   });
 
-  const dest = homeForRole(user.role, user.mustResetPassword);
+  const dest =
+    user.mustResetPassword
+      ? "/conta/trocar-senha"
+      : user.role === "ADMIN"
+        ? "/administracao"
+        : safeCallbackUrl(callbackUrl) || homeForRole(user.role, user.mustResetPassword);
   const res = wantsJson
     ? NextResponse.json({ ok: true, redirect: dest, role: user.role })
     : NextResponse.redirect(new URL(dest, base), 303);

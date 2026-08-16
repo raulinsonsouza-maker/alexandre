@@ -1,6 +1,6 @@
 ﻿import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createDemoCheckout } from "@/lib/payment";
+import { createCheckout } from "@/lib/payment";
 import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -9,25 +9,35 @@ function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function providerLabel() {
+  const p = process.env.PAYMENT_PROVIDER || "demo";
+  if (p === "cakto") return "Pagamento seguro na Cakto (Pix, cartão ou boleto). Use o mesmo e-mail desta conta.";
+  if (p === "demo") return "Modo demonstração: o acesso é liberado automaticamente.";
+  return `Gateway: ${p}`;
+}
+
 async function checkoutAction(formData: FormData) {
   "use server";
   const session = await auth();
-  if (!session?.user) redirect("/conta/entrar");
   const planSlug = String(formData.get("planSlug") || "") || undefined;
   const moduleSlug = String(formData.get("moduleSlug") || "") || undefined;
   const couponCode = String(formData.get("couponCode") || "") || undefined;
+  const back = `/checkout?${planSlug ? `plan=${planSlug}` : `module=${moduleSlug}`}`;
+  if (!session?.user) redirect(`/conta/entrar?callbackUrl=${encodeURIComponent(back)}`);
+  let redirectUrl = "/academia?purchased=1";
   try {
-    await createDemoCheckout({
+    const result = await createCheckout({
       userId: session.user.id,
       planSlug,
       moduleSlug,
       couponCode,
     });
+    redirectUrl = result.redirectUrl;
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erro no checkout";
-    redirect(`/checkout?error=${encodeURIComponent(msg)}${planSlug ? `&plan=${planSlug}` : ""}${moduleSlug ? `&module=${moduleSlug}` : ""}`);
+    redirect(`${back}&error=${encodeURIComponent(msg)}`);
   }
-  redirect("/academia?purchased=1");
+  redirect(redirectUrl);
 }
 
 export default async function CheckoutPage({
@@ -37,6 +47,7 @@ export default async function CheckoutPage({
 }) {
   const session = await auth();
   const sp = await searchParams;
+  const provider = process.env.PAYMENT_PROVIDER || "demo";
 
   let title = "";
   let priceCents = 0;
@@ -44,6 +55,7 @@ export default async function CheckoutPage({
   let moduleSlug: string | undefined;
   let blockedReason: string | null = null;
   let kind: "plan" | "module" | null = null;
+  let caktoReady = true;
 
   if (sp.plan) {
     const plan = await prisma.plan.findUnique({
@@ -68,6 +80,7 @@ export default async function CheckoutPage({
     planSlug = plan.slug;
     title = `Plano ${plan.name}`;
     priceCents = plan.priceCents;
+    caktoReady = provider !== "cakto" || Boolean(plan.caktoOfferId);
     if (session?.user && (await userAlreadyHasPlanAccess(session.user.id, plan.id))) {
       blockedReason = "Você já possui este plano. Acesse o Campus.";
     }
@@ -88,6 +101,9 @@ export default async function CheckoutPage({
     moduleSlug = mod.slug;
     title = mod.title;
     priceCents = mod.priceCents;
+    if (provider === "cakto") {
+      blockedReason = "Compra de módulo avulso ainda não está disponível no checkout Cakto. Escolha um plano.";
+    }
     if (session?.user && (await userAlreadyHasModuleAccess(session.user.id, mod.id))) {
       blockedReason = "Você já tem acesso a este módulo. Acesse o Campus.";
     }
@@ -108,6 +124,9 @@ export default async function CheckoutPage({
     );
   }
 
+  const checkoutQs = planSlug ? `plan=${planSlug}` : `module=${moduleSlug}`;
+  const payLabel = provider === "cakto" ? "Ir para pagamento" : "Pagar e liberar acesso";
+
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
       <h1 className="text-3xl font-semibold text-white">Checkout</h1>
@@ -118,9 +137,12 @@ export default async function CheckoutPage({
         </p>
         <h2 className="mt-1 text-lg font-semibold text-[#F1C96B]">{title}</h2>
         <p className="mt-2 text-2xl text-white">{formatBRL(priceCents)}</p>
-        <p className="mt-2 text-sm text-[#A8A8AF]">
-          Gateway: {process.env.PAYMENT_PROVIDER || "demo"} (confirmação automática em modo demo).
-        </p>
+        <p className="mt-2 text-sm text-[#A8A8AF]">{providerLabel()}</p>
+        {session?.user?.email && provider === "cakto" && (
+          <p className="mt-2 text-sm text-white">
+            E-mail da compra: <span className="text-[#F1C96B]">{session.user.email}</span>
+          </p>
+        )}
       </div>
 
       {blockedReason ? (
@@ -130,14 +152,23 @@ export default async function CheckoutPage({
             Ir à Academia
           </Link>
         </div>
+      ) : !caktoReady ? (
+        <p className="mt-6 text-sm text-red-400">Este plano ainda não está disponível para pagamento. Tente em instantes.</p>
       ) : !session?.user ? (
         <p className="mt-6 text-sm text-[#A8A8AF]">
           Faça{" "}
           <Link
-            href={`/conta/entrar?callbackUrl=${encodeURIComponent(`/checkout?${planSlug ? `plan=${planSlug}` : `module=${moduleSlug}`}`)}`}
+            href={`/conta/entrar?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`}
             className="text-[#F1C96B]"
           >
             login
+          </Link>{" "}
+          ou{" "}
+          <Link
+            href={`/conta/cadastro?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`}
+            className="text-[#F1C96B]"
+          >
+            cadastre-se
           </Link>{" "}
           para comprar.
         </p>
@@ -145,9 +176,11 @@ export default async function CheckoutPage({
         <form action={checkoutAction} className="mt-6 space-y-4">
           {planSlug && <input type="hidden" name="planSlug" value={planSlug} />}
           {moduleSlug && <input type="hidden" name="moduleSlug" value={moduleSlug} />}
-          <input className="input" name="couponCode" placeholder="Cupom (opcional)" />
+          {provider !== "cakto" && (
+            <input className="input" name="couponCode" placeholder="Cupom (opcional)" />
+          )}
           <button className="btn w-full" type="submit">
-            Pagar e liberar acesso
+            {payLabel}
           </button>
         </form>
       )}

@@ -39,6 +39,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-c
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
@@ -50,7 +51,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 RUN npm install --omit=dev prisma@6.19.3 tsx@4.23.11 @prisma/client@6.19.3 \
   && npx prisma generate \
   && mkdir -p /app/public/media /app/public/uploads \
-  && chown -R nextjs:nodejs /app/public /app/node_modules /app/prisma /app/src || true
+  && chown -R nextjs:nodejs /app/public /app/node_modules /app/prisma /app/src /app/scripts || true
 
 USER nextjs
 EXPOSE 3000

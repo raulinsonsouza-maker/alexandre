@@ -46,6 +46,11 @@ services:
       APP_VERSION: ${APP_VERSION:-0.1.0}
       PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-demo}
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-log}
+      CAKTO_CLIENT_ID: ${CAKTO_CLIENT_ID:-}
+      CAKTO_CLIENT_SECRET: ${CAKTO_CLIENT_SECRET:-}
+      CAKTO_WEBHOOK_SECRET: ${CAKTO_WEBHOOK_SECRET:-}
+      CAKTO_API_BASE: ${CAKTO_API_BASE:-https://api.cakto.com.br/public_api}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-https://alexandre.symbius.com.br}
       CONTENT_PATH: /content/aulas-conteudo.json
     volumes:
       - /opt/apps/alexandre/data/media:/app/public/media
