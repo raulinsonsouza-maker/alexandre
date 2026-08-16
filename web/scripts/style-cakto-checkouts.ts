@@ -15,9 +15,14 @@ type Checkout = {
   offers?: unknown;
 };
 
-async function styleProduct(productId: string, offerId: string) {
+async function styleProduct(productId: string, offerId: string, plan: { name: string; priceCents: number }) {
   try {
+    const current = (await caktoGet<Record<string, unknown>>(`/products/${productId}/`)) || {};
     await caktoPut(`/products/${productId}/`, {
+      name: current.name || `Jornada SAP EWM — ${plan.name}`,
+      description: current.description || plan.name,
+      price: current.price ?? (plan.priceCents / 100).toFixed(2),
+      type: current.type || "unique",
       image: LOGO,
       supportWhatsapp: "5511974389297",
       salesPage: "https://alexandre.symbius.com.br/planos",
@@ -65,7 +70,10 @@ async function main() {
       console.warn(`Plano ${plan.slug} sem produto Cakto`);
       continue;
     }
-    await styleProduct(plan.caktoProductId, plan.caktoOfferId || "");
+    await styleProduct(plan.caktoProductId, plan.caktoOfferId || "", {
+      name: plan.name,
+      priceCents: plan.priceCents,
+    });
   }
 }
 
