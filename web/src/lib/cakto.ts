@@ -49,6 +49,7 @@ async function caktoFetch(path: string, init: RequestInit = {}) {
     headers.set("Content-Type", "application/json");
   }
   const res = await fetch(url, { ...init, headers });
+  if (res.status === 204) return null;
   const text = await res.text();
   let json: unknown = null;
   try {
@@ -72,6 +73,10 @@ export function caktoPost<T = unknown>(path: string, body: unknown) {
 
 export function caktoPut<T = unknown>(path: string, body: unknown) {
   return caktoFetch(path, { method: "PUT", body: JSON.stringify(body) }) as Promise<T>;
+}
+
+export function caktoDelete(path: string) {
+  return caktoFetch(path, { method: "DELETE" });
 }
 
 export function payUrlForOffer(offerId: string) {

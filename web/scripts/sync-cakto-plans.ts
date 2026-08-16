@@ -101,6 +101,11 @@ async function main() {
       price: spec.price,
       type: "unique",
       salesPage: `${SALES_PAGE.replace(/\/$/, "")}/planos`,
+      emailAccessLink: `${SALES_PAGE.replace(/\/$/, "")}/academia`,
+      contentDeliveries: ["external"],
+      guarantee: 7,
+      supportWhatsapp: "+5511974389297",
+      supportEmail: "contato@bestoneit.com.br",
     })) as ProductCreate;
 
     const productId = pickId(created as Record<string, unknown>);
