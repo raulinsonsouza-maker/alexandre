@@ -1,4 +1,4 @@
-import { BASE_MODULE_CODES, PRO_EXTRA_CODES } from "@/data/plan-modules";
+import { BASE_MODULE_CODES, PRO_MODULE_CODES } from "@/data/plan-modules";
 
 export type PlanSalesSlug = "base" | "pro" | "expert" | "corporate";
 
@@ -13,105 +13,129 @@ export const PLAN_SALES: Record<
     audience: string;
     promise: string;
     checkoutEnabled: boolean;
+    outcomes: string[];
     steps: { title: string; text: string }[];
     faq: FaqItem[];
-    groups: { title: string; hint: string; codes: readonly string[] }[];
-    compare: string;
+    /** Códigos do plano; "all" = todos os módulos publicados */
+    moduleCodes: readonly string[] | "all";
+    modulesHint: string;
   }
 > = {
   base: {
     slug: "base",
     kicker: "Plano Base · 6 módulos",
-    headline: "Entre no SAP EWM com base sólida",
-    audience: "Para quem está começando no EWM e precisa entender o mapa do armazém antes de operar o dia a dia.",
+    headline: "Pare de se sentir perdido no EWM",
+    audience:
+      "Você entra no projeto, abre o sistema e o armazém parece um labirinto. Este plano existe para isso acabar.",
     promise:
-      "Você sai com a estrutura mental certa: ERP x EWM, dados mestres, Warehouse Monitor e a visão geral de inbound/outbound — o alicerce para subir ao Pro depois.",
+      "Em 6 módulos objetivos você entende como o EWM se liga ao ERP, como o armazém está estruturado, quais dados mestres importam e como o Warehouse Monitor vira o seu painel de controle. Sem enrolação. Sem jargão solto. Você sai sabendo o que está vendo na tela.",
     checkoutEnabled: true,
+    outcomes: [
+      "Ler a arquitetura ERP × EWM com segurança em reunião",
+      "Explicar estrutura do armazém sem copiar slide",
+      "Navegar dados mestres e o Warehouse Monitor no dia a dia",
+      "Enxergar o fluxo de delivery de ponta a ponta",
+      "Certificado por módulo para colocar no LinkedIn e no currículo",
+    ],
     steps: [
-      { title: "Crie sua conta", text: "Cadastro rápido no site da Academia, com o e-mail que você usará no pagamento." },
-      { title: "Pague na Cakto", text: "Pix, cartão ou boleto no checkout seguro. Use o mesmo e-mail da conta." },
-      { title: "Acesse a Academia", text: "Assim que o pagamento for aprovado, os 6 módulos do Base são liberados." },
+      { title: "Garanta sua vaga", text: "Cadastro em um minuto. Use o e-mail que vai no pagamento." },
+      { title: "Pague com segurança", text: "Pix, cartão ou boleto no checkout da Cakto." },
+      { title: "Comece hoje", text: "Pagamento aprovado, os 6 módulos abrem na Academia. Estude no seu ritmo." },
     ],
     faq: [
-      { q: "O acesso é imediato?", a: "Sim, após a Cakto confirmar o pagamento enviamos o webhook e a matrícula fica ativa. Entre na Academia com o mesmo e-mail." },
-      { q: "Posso subir para o Pro depois?", a: "Sim. O Pro inclui tudo do Base. Fale com o suporte se já tiver o Base e quiser o upgrade." },
-      { q: "Tem certificado?", a: "Sim. Você emite certificado por módulo concluído na área logada." },
+      { q: "Quando começo?", a: "Assim que o pagamento for aprovado. Entre na Academia com o mesmo e-mail da compra." },
+      { q: "Serve para quem nunca viu EWM?", a: "Sim. Foi desenhado para quem está começando e precisa de clareza, não de volume." },
+      { q: "Tem certificado?", a: "Sim. Você emite por módulo concluído, direto na área logada." },
     ],
-    groups: [{ title: "6 módulos do Base", hint: "Fundamentos, estrutura e Monitor", codes: BASE_MODULE_CODES }],
-    compare: "Depois do Base, o Pro adiciona 22 módulos operacionais (GR, GI, HU, RF, waves).",
+    moduleCodes: BASE_MODULE_CODES,
+    modulesHint: "Seis aulas-núcleo. Cada uma resolve uma dúvida real de quem está começando.",
   },
   pro: {
     slug: "pro",
-    kicker: "Plano Pro · 28 módulos · mais recomendado",
-    headline: "Domine o dia a dia do armazém no EWM",
-    audience: "Para analistas e consultores que precisam executar inbound, outbound, inventário, HU e RF com segurança.",
+    kicker: "Plano Pro · 28 módulos",
+    headline: "Vire a pessoa que resolve o armazém no SAP",
+    audience:
+      "Consultor, analista ou key user que precisa executar — não só conversar sobre — inbound, outbound, inventário, HU e RF.",
     promise:
-      "Inclui todo o Base mais 22 módulos de processo: recebimento, expedição, waves, WT/WO, lotes, seriais e RF Framework — o pacote que cobre o chão de armazém.",
+      "28 módulos de operação real: recebimento, expedição, inventário, cross-docking, seriais, shipping, waves, VAS, WIP, recursos, WT, WO, distância, putaway, HU, lotes, identificação de estoque, UoM, RF, catch weight e distribuição. Você sai pronto para o chão de armazém, não para o PowerPoint.",
     checkoutEnabled: true,
+    outcomes: [
+      "Configurar e explicar GR, GI e inventário físico com propriedade",
+      "Dominar HU, lote, serial e identificação de estoque",
+      "Operar RF Framework e waves como no projeto do cliente",
+      "Entregar WT/WO, putaway e resource management sem improviso",
+      "Certificados por módulo para provar o que você realmente fez",
+    ],
     steps: [
-      { title: "Crie sua conta", text: "Cadastro no site. Esse e-mail precisa ser o mesmo da Cakto." },
-      { title: "Pague o Pro na Cakto", text: "Checkout hospedado (Pix, cartão ou boleto)." },
-      { title: "28 módulos na Academia", text: "Tudo do Base + os 22 módulos operacionais liberados de uma vez." },
+      { title: "Trave o preço", text: "Cadastro rápido. O e-mail da conta é o da compra — sem mistério." },
+      { title: "Pague e entre", text: "Cakto: Pix, cartão ou boleto. Checkout seguro." },
+      { title: "28 módulos seus", text: "Acesso imediato na Academia depois da aprovação. Estude, pratique, certifique." },
     ],
     faq: [
-      { q: "O Pro inclui o Base?", a: "Sim. É cumulativo: 6 do Base + 22 operacionais = 28 módulos." },
-      { q: "E se eu pagar com outro e-mail?", a: "A matrícula é ligada ao e-mail da conta. Use o mesmo na Cakto para o acesso sair automático." },
-      { q: "Tem certificado?", a: "Sim, por módulo, na Academia." },
+      { q: "O acesso é na hora?", a: "Sim, após a confirmação do pagamento. Login com o mesmo e-mail da Cakto." },
+      { q: "Isso cobre o dia a dia do projeto?", a: "Sim. O recorte é operacional: o que o consultor e o time de armazém realmente usam." },
+      { q: "Tem certificado?", a: "Sim, um por módulo concluído." },
     ],
-    groups: [
-      { title: "Tudo do Base (6)", hint: "Já incluso", codes: BASE_MODULE_CODES },
-      { title: "Mais 22 operacionais", hint: "Processos, HU, RF e waves", codes: PRO_EXTRA_CODES },
-    ],
-    compare: "O Expert soma 17 módulos avançados (QM, produção, TM, MFS, analytics e migração).",
+    moduleCodes: PRO_MODULE_CODES,
+    modulesHint: "Vinte e oito módulos. A trilha de quem precisa entregar resultado no cliente, não só assistir aula.",
   },
   expert: {
     slug: "expert",
     kicker: "Plano Expert · 45 módulos",
-    headline: "EWM de ponta a ponta, inclusive avançado",
-    audience: "Para quem já opera o básico e precisa de integração, automação, qualidade, produção e cenários avançados.",
+    headline: "Seja a referência técnica de EWM no projeto",
+    audience:
+      "Quem já opera o armazém e agora precisa de integração, automação, qualidade, produção e os cenários que separam o especialista do restante da sala.",
     promise:
-      "Todo o Pro mais 17 módulos de profundidade técnica: QM, produção, TM, MFS, DAS, analytics, RFID, labor, billing e migração WM→EWM.",
+      "45 módulos do mapa completo: operação, qualidade, produção, TM, MFS, DAS, analytics, RFID, labor, billing e migração WM→EWM. Você deixa de ser “o de EWM básico” e passa a ser quem fecha o desenho de ponta a ponta.",
     checkoutEnabled: true,
+    outcomes: [
+      "Conduzir desenhos com QM, produção e transporte no mesmo fio",
+      "Falar de MFS, DAS, RFID e labor sem enrolar o cliente",
+      "Usar analytics e billing para sustentar decisão, não achismo",
+      "Apoiar migração WM→EWM com repertório, não com Wikipedia",
+      "Portfólio de certificados no volume máximo da jornada",
+    ],
     steps: [
-      { title: "Crie sua conta", text: "Cadastro na Academia com o e-mail da compra." },
-      { title: "Pague o Expert na Cakto", text: "Pagamento único no checkout seguro." },
-      { title: "Trilha completa", text: "Os 45 módulos publicados entram na sua matrícula." },
+      { title: "Reserve o Expert", text: "Crie a conta com o e-mail que vai pagar." },
+      { title: "Checkout seguro", text: "Pix, cartão ou boleto na Cakto, pagamento único." },
+      { title: "Trilha inteira aberta", text: "45 módulos na Academia, no seu ritmo, com certificado por módulo." },
     ],
     faq: [
-      { q: "Inclui Base e Pro?", a: "Sim. Expert = Pro (28) + 17 avançados = 45 módulos." },
-      { q: "Como acesso depois de pagar?", a: "Login na Academia com o e-mail da Cakto. O webhook libera a matrícula automaticamente." },
-      { q: "Serve para empresa?", a: "Conteúdo técnico sim. Para times, licenças e dashboard, veja o Corporate." },
+      { q: "Quando libero o acesso?", a: "No instante em que o pagamento for aprovado. Entre com o e-mail da compra." },
+      { q: "É para quem já trabalha com EWM?", a: "Sim. O Expert assume que você quer profundidade: integração, automação e cenários avançados." },
+      { q: "Tem certificado?", a: "Sim. Cada módulo concluído gera certificado na Academia." },
     ],
-    groups: [
-      { title: "Tudo do Base (6)", hint: "Já incluso", codes: BASE_MODULE_CODES },
-      { title: "Tudo do Pro (+22)", hint: "Já incluso", codes: PRO_EXTRA_CODES },
-      { title: "17 módulos Expert", hint: "Integrações e cenários avançados", codes: [] },
-    ],
-    compare: "Times e gestão de colaboradores: plano Corporate, sob consulta.",
+    moduleCodes: "all",
+    modulesHint: "Quarenta e cinco módulos. O mapa completo para quem quer ser a referência na mesa do projeto.",
   },
   corporate: {
     slug: "corporate",
-    kicker: "Corporate · 45 módulos + gestão",
-    headline: "O Expert para o time, com gestão",
-    audience: "Para empresas (Retail, Farma, 3PL) que precisam do conteúdo completo e controle por colaborador.",
+    kicker: "Corporate · capacitação do time",
+    headline: "Capacite o time inteiro, com controle de verdade",
+    audience:
+      "Retail, Farma, 3PL e indústrias que não podem depender de um único especialista — e precisam de trilha, prazo e evidência por colaborador.",
     promise:
-      "Mesmos 45 módulos do Expert, com licenças, trilhas por perfil, relatórios e certificados por pessoa. Proposta no WhatsApp — sem checkout automático.",
+      "Conteúdo técnico completo da jornada, licenças para o time, trilhas por perfil, relatórios de progresso e certificado por pessoa. Sem checkout genérico: montamos a proposta no WhatsApp, do tamanho da sua operação.",
     checkoutEnabled: false,
+    outcomes: [
+      "Mesmo conteúdo avançado, organizado para várias pessoas",
+      "Trilhas por perfil (consultor, key user, operação)",
+      "Visão de quem avançou, quem travou e quem certificou",
+      "Onboarding alinhado ao go-live ou à onda de projeto",
+      "Proposta sob medida — volume, prazo e unidades",
+    ],
     steps: [
-      { title: "Conte o contexto", text: "Quantas pessoas, unidades e prazo de capacitação." },
-      { title: "Proposta no WhatsApp", text: "Montamos valor, trilhas e onboarding." },
-      { title: "Acesso do time", text: "Cada colaborador entra na Academia com a trilha combinada." },
+      { title: "Fale o cenário", text: "Quantas pessoas, unidades, prazo e o que o time precisa entregar." },
+      { title: "Receba a proposta", text: "Valor, trilhas e onboarding no WhatsApp, sem formulário eterno." },
+      { title: "O time entra", text: "Cada colaborador acessa a Academia com a trilha combinada." },
     ],
     faq: [
-      { q: "O conteúdo é o Expert?", a: "Sim, os 45 módulos. O diferencial é gestão, licenças e acompanhamento." },
-      { q: "Tem pagamento no site?", a: "Não. Corporate é sob consulta, para fechar volume e onboarding." },
+      { q: "Dá para pagar no site?", a: "Não. Corporate é proposta comercial, para fechar volume e onboarding com calma." },
+      { q: "Consigo certificados por colaborador?", a: "Sim. Cada pessoa emite os certificados dos módulos que concluir." },
+      { q: "Atende operação em vários CDs?", a: "Sim. É o formato pensado para empresa, não para compra individual." },
     ],
-    groups: [
-      { title: "Base (6)", hint: "Fundamentos", codes: BASE_MODULE_CODES },
-      { title: "Pro (+22)", hint: "Operação do armazém", codes: PRO_EXTRA_CODES },
-      { title: "Expert (+17)", hint: "Avançado — igual ao Expert", codes: [] },
-    ],
-    compare: "Pessoa física: escolha Base, Pro ou Expert e pague na Cakto.",
+    moduleCodes: "all",
+    modulesHint: "Toda a trilha técnica, empacotada para o time — com gestão, não só com login.",
   },
 };
 
