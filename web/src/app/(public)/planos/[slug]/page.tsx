@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PRO_MODULE_CODES } from "@/data/plan-modules";
 import { PLAN_SALES, PLAN_SALES_SLUGS, type PlanSalesSlug } from "@/data/plan-sales";
 import { BuyPlanButton } from "@/components/checkout/BuyPlanModal";
 
@@ -40,10 +41,19 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
     orderBy: { sortOrder: "asc" },
   });
   const titleByCode = new Map(modules.map((m) => [m.code, m.title]));
-  const codes =
-    copy.moduleCodes === "all"
-      ? modules.map((m) => m.code)
-      : [...copy.moduleCodes];
+  const allCodes =
+    copy.moduleCodes === "all" ? modules.map((m) => m.code) : [...copy.moduleCodes];
+
+  const codeSet = new Set(allCodes);
+  const proSet = new Set(PRO_MODULE_CODES as readonly string[]);
+  const groups =
+    copy.moduleGroups?.map((g) => {
+      const codes =
+        g.codes.length > 0
+          ? g.codes.filter((c) => codeSet.has(c))
+          : allCodes.filter((c) => !proSet.has(c));
+      return { title: g.title, codes };
+    }) ?? [{ title: "Módulos", codes: allCodes }];
 
   const wa =
     (await prisma.siteSetting.findUnique({ where: { key: "whatsapp_url" } }))?.value ||
@@ -51,27 +61,37 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
       encodeURIComponent("Olá, quero uma proposta do plano Corporate da Jornada SAP EWM.");
 
   const priceLabel = copy.checkoutEnabled ? formatBRL(plan.priceCents) : "Sob consulta";
-  const ctaLabel = copy.checkoutEnabled ? `Quero o ${plan.name} agora` : "Pedir proposta no WhatsApp";
+  const ctaLabel = copy.ctaLabel;
 
   return (
     <div className="bg-[#0a0a0c] text-white">
-      <section className="border-b border-white/10 px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[1140px]">
-          <Link href="/planos" className="text-sm text-[#888] hover:text-[#f6b40a]">
-            ← Voltar
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-white/10 px-[clamp(20px,4vw,56px)] py-14 md:py-20">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(246,180,10,0.12),transparent_55%)]"
+        />
+        <div className="relative mx-auto max-w-[720px]">
+          <Link href="/planos" className="text-sm text-[#888] transition hover:text-[#f6b40a]">
+            ← Todos os planos
           </Link>
-          <p className="mt-6 font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+          <p className="mt-8 font-[family-name:var(--font-display)] text-[12px] font-bold uppercase tracking-[0.18em] text-[#f6b40a]">
             {copy.kicker}
           </p>
-          <h1 className="mt-3 max-w-3xl font-[family-name:var(--font-display)] text-[clamp(32px,5vw,58px)] font-bold uppercase leading-[0.95]">
+          <h1 className="mt-4 font-[family-name:var(--font-display)] text-[clamp(28px,4.5vw,48px)] font-bold leading-[1.05] tracking-tight">
             {copy.headline}
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-[#cfcfcf]">{copy.audience}</p>
-          <p className="mt-4 max-w-2xl text-[#a8a8a8]">{copy.promise}</p>
-          <div className="mt-8 flex flex-wrap items-end gap-6">
+          <p className="mt-5 text-lg leading-relaxed text-[#d4d4d4]">{copy.audience}</p>
+          <p className="mt-3 text-base leading-relaxed text-[#9a9a9a]">{copy.promise}</p>
+
+          <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-[family-name:var(--font-display)] text-4xl text-[#f6b40a]">{priceLabel}</p>
-              <p className="text-sm text-[#888]">{plan._count.modules} módulos · acesso na Academia</p>
+              <p className="font-[family-name:var(--font-display)] text-[42px] leading-none text-[#f6b40a]">
+                {priceLabel}
+              </p>
+              <p className="mt-2 text-sm text-[#888]">
+                {plan._count.modules} módulos · acesso imediato na Academia
+              </p>
             </div>
             <BuyPlanButton
               loggedIn={Boolean(session?.user)}
@@ -85,69 +105,104 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
         </div>
       </section>
 
+      {/* Outcomes */}
       <section className="px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[1140px]">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">
-            O que muda <span className="text-[#f6b40a]">na sua carreira</span>
+        <div className="mx-auto max-w-[720px]">
+          <h2 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,32px)] font-bold leading-tight">
+            {copy.outcomesTitle}
           </h2>
-          <ul className="mt-8 grid gap-3 md:grid-cols-2">
+          <ul className="mt-8 space-y-0 divide-y divide-white/10 border-y border-white/10">
             {copy.outcomes.map((item) => (
-              <li key={item} className="rounded-xl border border-white/10 bg-[#141416] p-5 text-[#cfcfcf]">
-                <span className="mr-2 text-[#f6b40a]">▸</span>
-                {item}
+              <li key={item} className="flex gap-4 py-4 text-[#d4d4d4]">
+                <span className="mt-0.5 shrink-0 text-[#f6b40a]" aria-hidden>
+                  →
+                </span>
+                <span className="leading-relaxed">{item}</span>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
+      {/* Modules */}
       <section className="border-y border-white/10 bg-[#111113] px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[1140px]">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">
-            Módulos deste plano
+        <div className="mx-auto max-w-[900px]">
+          <h2 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,32px)] font-bold leading-tight">
+            O que está incluso
           </h2>
-          <p className="mt-3 max-w-2xl text-[#a8a8a8]">{copy.modulesHint}</p>
-          <ul className="mt-8 columns-1 gap-x-10 sm:columns-2">
-            {codes.map((code) => (
-              <li key={code} className="mb-2 break-inside-avoid text-sm text-[#cfcfcf]">
-                <span className="mr-2 text-[#f6b40a]">✓</span>
-                {titleByCode.get(code) || code}
+          <p className="mt-3 max-w-xl text-[#9a9a9a]">{copy.modulesHint}</p>
+
+          <div className="mt-10 space-y-10">
+            {groups.map((group) => (
+              <div key={group.title}>
+                {groups.length > 1 && (
+                  <h3 className="mb-4 font-[family-name:var(--font-display)] text-sm font-bold uppercase tracking-[0.14em] text-[#f6b40a]">
+                    {group.title}
+                  </h3>
+                )}
+                <ul className="columns-1 gap-x-12 sm:columns-2">
+                  {group.codes.map((code) => (
+                    <li
+                      key={code}
+                      className="mb-2.5 break-inside-avoid text-[15px] leading-snug text-[#cfcfcf]"
+                    >
+                      <span className="mr-2 text-[#f6b40a]">✓</span>
+                      {titleByCode.get(code) || code}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Steps */}
+      <section className="px-[clamp(20px,4vw,56px)] py-16">
+        <div className="mx-auto max-w-[900px]">
+          <h2 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,32px)] font-bold leading-tight">
+            Como funciona
+          </h2>
+          <ol className="mt-10 grid gap-8 md:grid-cols-3">
+            {copy.steps.map((s, i) => (
+              <li key={s.title}>
+                <p className="font-[family-name:var(--font-display)] text-3xl text-[#f6b40a]/50">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-white">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#9a9a9a]">{s.text}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
-      <section className="px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[1140px]">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">Como você entra</h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {copy.steps.map((s, i) => (
-              <div key={s.title} className="rounded-xl border border-white/10 bg-[#141416] p-6">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#f6b40a]">Passo {i + 1}</p>
-                <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-bold uppercase">{s.title}</h3>
-                <p className="mt-2 text-sm text-[#a8a8a8]">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      {/* FAQ + closing CTA */}
       <section className="border-t border-white/10 px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[800px]">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">Dúvidas que travam a compra</h2>
-          <div className="mt-8 space-y-4">
+        <div className="mx-auto max-w-[720px]">
+          <h2 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,32px)] font-bold leading-tight">
+            Perguntas frequentes
+          </h2>
+          <div className="mt-8 space-y-6">
             {copy.faq.map((item) => (
-              <div key={item.q} className="rounded-xl border border-white/10 bg-[#141416] p-5">
-                <h3 className="font-semibold text-[#f6b40a]">{item.q}</h3>
-                <p className="mt-2 text-sm text-[#cfcfcf]">{item.a}</p>
+              <div key={item.q} className="border-b border-white/10 pb-6">
+                <h3 className="font-semibold text-white">{item.q}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-[#a8a8a8]">{item.a}</p>
               </div>
             ))}
           </div>
-          <div className="mt-10 rounded-xl border border-[#f6b40a]/40 bg-gradient-to-b from-[#1c1706] to-[#141416] p-8 text-center">
-            <p className="font-[family-name:var(--font-display)] text-2xl font-bold uppercase">{copy.headline}</p>
-            <p className="mt-2 text-[#f6b40a]">{priceLabel}</p>
-            <div className="mt-6 flex justify-center">
+
+          <div className="mt-14 text-center">
+            <p className="font-[family-name:var(--font-display)] text-[clamp(22px,3vw,30px)] font-bold leading-tight">
+              {copy.closing}
+            </p>
+            <p className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[#f6b40a]">
+              {priceLabel}
+            </p>
+            <p className="mt-2 text-sm text-[#888]">
+              {plan._count.modules} módulos · pagamento único
+            </p>
+            <div className="mt-7 flex justify-center">
               <BuyPlanButton
                 loggedIn={Boolean(session?.user)}
                 planSlug={slug}
