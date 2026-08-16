@@ -11,6 +11,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "cakto:sync": "tsx scripts/sync-cakto-plans.ts",
     "cakto:style": "tsx scripts/style-cakto-checkouts.ts",
+    "cakto:repair": "tsx scripts/repair-cakto-sales.ts",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },

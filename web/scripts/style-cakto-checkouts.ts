@@ -23,9 +23,13 @@ async function styleProduct(productId: string, offerId: string, plan: { name: st
       description: current.description || plan.name,
       price: current.price ?? (plan.priceCents / 100).toFixed(2),
       type: current.type || "unique",
+      status: current.status || "active",
       image: LOGO,
-      supportWhatsapp: "5511974389297",
+      supportWhatsapp: "+5511974389297",
       salesPage: "https://alexandre.symbius.com.br/planos",
+      contentDeliveries: current.contentDeliveries || ["external"],
+      emailAccessLink: current.emailAccessLink || "https://alexandre.symbius.com.br/academia",
+      guarantee: current.guarantee ?? 7,
     });
     console.log(`Produto ${productId}: imagem/suporte atualizados`);
   } catch (err) {
