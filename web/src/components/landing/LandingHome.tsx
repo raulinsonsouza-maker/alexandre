@@ -211,9 +211,9 @@ export function LandingHome({
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { tag: "Base", title: "Plano Base", desc: "6 módulos · R$ 397 — fundamentos, estrutura e Warehouse Monitor.", href: "/checkout?plan=base" },
-            { tag: "Pro", title: "Plano Pro", desc: "28 módulos · R$ 697 — tudo do Base + processos, HU, RF e waves.", href: "/checkout?plan=pro", premium: true },
-            { tag: "Expert", title: "Plano Expert", desc: "45 módulos · R$ 1.497 — tudo do Pro + QM, produção, TM e MFS.", href: "/checkout?plan=expert" },
+            { tag: "Base", title: "Plano Base", desc: "6 módulos · R$ 397 — fundamentos, estrutura e Warehouse Monitor.", href: "/planos/base" },
+            { tag: "Pro", title: "Plano Pro", desc: "28 módulos · R$ 697 — tudo do Base + processos, HU, RF e waves.", href: "/planos/pro", premium: true },
+            { tag: "Expert", title: "Plano Expert", desc: "45 módulos · R$ 1.497 — tudo do Pro + QM, produção, TM e MFS.", href: "/planos/expert" },
           ].map((t) => (
             <Link
               key={t.title}
@@ -234,7 +234,7 @@ export function LandingHome({
               </span>
               <h3 className="font-[family-name:var(--font-display)] text-[26px] font-bold uppercase text-white">{t.title}</h3>
               <p className="mt-2 mb-4 text-sm leading-relaxed text-[#a8a8a8]">{t.desc}</p>
-              <span className="text-sm font-bold text-[#f6b40a]">Ver checkout →</span>
+              <span className="text-sm font-bold text-[#f6b40a]">Ver página de venda →</span>
             </Link>
           ))}
         </div>

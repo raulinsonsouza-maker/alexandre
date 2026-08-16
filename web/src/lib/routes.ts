@@ -11,6 +11,7 @@ export const routes = {
   contato: "/contato",
   checkout: "/checkout",
   checkoutPlan: (slug: string) => `/checkout?plan=${slug}`,
+  planSales: (slug: string) => `/planos/${slug}`,
   checkoutModule: (slug: string) => `/checkout?module=${slug}`,
 
   conta: {

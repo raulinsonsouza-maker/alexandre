@@ -12,10 +12,6 @@ export default async function PlanosPage() {
     orderBy: { sortOrder: "asc" },
   });
 
-  const wa =
-    (await prisma.siteSetting.findUnique({ where: { key: "whatsapp_url" } }))?.value ||
-    "https://wa.me/5511974389297";
-
   return (
     <div className="bg-[#0a0a0c] px-[clamp(20px,4vw,56px)] py-16 text-white">
       <div className="mx-auto max-w-[1140px]">
@@ -33,8 +29,7 @@ export default async function PlanosPage() {
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {plans.map((p) => {
             const bullets = Array.isArray(p.bullets) ? (p.bullets as string[]) : [];
-            const href = p.checkoutEnabled ? `/checkout?plan=${p.slug}` : p.ctaUrl || wa;
-            const external = !p.checkoutEnabled;
+            const href = `/planos/${p.slug}`;
             return (
               <div
                 key={p.id}
@@ -65,15 +60,13 @@ export default async function PlanosPage() {
                 </ul>
                 <Link
                   href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
                   className={`mt-6 inline-flex justify-center rounded px-4 py-3 text-center text-sm font-bold ${
                     p.checkoutEnabled
                       ? "bg-[#f6b40a] text-[#0a0a0c]"
                       : "border border-dashed border-[#f6b40a]/50 text-[#f6b40a]"
                   }`}
                 >
-                  {p.checkoutEnabled ? `Escolher ${p.name}` : "Falar no WhatsApp"}
+                  {p.checkoutEnabled ? `Ver ${p.name}` : "Ver Corporate"}
                 </Link>
               </div>
             );
