@@ -4,7 +4,6 @@ import { getToken } from "next-auth/jwt";
 
 function sessionCookieName() {
   const url = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "";
-  // Produção HTTPS (e login em /api/auth/login) usa o prefixo __Secure-
   if (url.startsWith("https://") || process.env.NODE_ENV === "production") {
     return "__Secure-authjs.session-token";
   }
@@ -13,8 +12,8 @@ function sessionCookieName() {
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isAcademia = pathname.startsWith("/academia");
-  const isAdmin = pathname.startsWith("/administracao");
+  const isAcademia = pathname === "/academia" || pathname.startsWith("/academia/");
+  const isAdmin = pathname === "/administracao" || pathname.startsWith("/administracao/");
   const isTrocarSenha = pathname.startsWith("/conta/trocar-senha");
 
   const res = NextResponse.next();
@@ -36,7 +35,7 @@ export async function middleware(req: NextRequest) {
     secureCookie: cookieName.startsWith("__Secure-"),
   });
 
-  if (!token?.id) {
+  if (!token?.id && !token?.sub) {
     const login = new URL("/conta/entrar", req.url);
     login.searchParams.set("callbackUrl", pathname + req.nextUrl.search);
     return NextResponse.redirect(login);
@@ -54,5 +53,12 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/academia/:path*", "/administracao/:path*", "/conta/trocar-senha"],
+  matcher: [
+    "/academia",
+    "/academia/:path*",
+    "/administracao",
+    "/administracao/:path*",
+    "/conta/trocar-senha",
+    "/conta/trocar-senha/:path*",
+  ],
 };

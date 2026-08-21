@@ -28,12 +28,31 @@ declare module "@auth/core/jwt" {
   }
 }
 
+const useSecureCookies =
+  (process.env.AUTH_URL || process.env.NEXTAUTH_URL || "").startsWith("https://") ||
+  process.env.NODE_ENV === "production";
+
+const sessionTokenCookie = useSecureCookies
+  ? "__Secure-authjs.session-token"
+  : "authjs.session-token";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/conta/entrar",
+  },
+  cookies: {
+    sessionToken: {
+      name: sessionTokenCookie,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureCookies,
+      },
+    },
   },
   providers: [
     Credentials({
@@ -71,38 +90,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id!;
         token.role = user.role;
         token.mustResetPassword = Boolean(user.mustResetPassword);
-      }
-      // Tokens criados via encode no /api/auth/login já trazem role/id
-      if (!token.role && token.id) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { mustResetPassword: true, active: true, role: true },
-        });
-        if (!dbUser?.active) {
-          return { ...token, id: undefined };
-        }
-        token.mustResetPassword = dbUser.mustResetPassword;
-        token.role = dbUser.role;
+        return token;
       }
       if (trigger === "update" && session?.mustResetPassword === false) {
         token.mustResetPassword = false;
       }
-      if (token.id && token.mustResetPassword) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { mustResetPassword: true, active: true, role: true },
-        });
-        if (!dbUser?.active) {
-          return { ...token, id: undefined };
-        }
-        token.mustResetPassword = dbUser.mustResetPassword;
-        token.role = dbUser.role;
-      }
+      // Tokens do /api/auth/login já trazem id/role — não consultar DB a cada request
+      // (evita cair no login quando o Postgres reseta conexão ociosa).
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = String(token.id || token.sub || "");
         session.user.role = token.role as Role;
         session.user.mustResetPassword = Boolean(token.mustResetPassword);
       }

@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const adminLinks = [
   { href: "/administracao", label: "Dashboard" },
@@ -18,6 +19,20 @@ const adminLinks = [
 
 export function AdminNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function onSignOut() {
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/signout", { method: "POST", credentials: "include" });
+    } catch {
+      // still leave the panel
+    }
+    router.replace("/");
+    router.refresh();
+  }
+
   return (
     <aside className="w-56 shrink-0 border-r border-[#2A2D32] bg-[#121014]">
       <div className="border-b border-[#2A2D32] px-4 py-5">
@@ -41,9 +56,14 @@ export function AdminNav() {
         <Link href="/academia" className="mt-4 rounded-md px-3 py-2 text-sm text-[#A8A8AF] hover:text-white">
           Ir à Academia
         </Link>
-        <Link href="/api/auth/signout" className="rounded-md px-3 py-2 text-sm text-[#A8A8AF] hover:text-white">
-          Sair
-        </Link>
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          disabled={signingOut}
+          className="rounded-md px-3 py-2 text-left text-sm text-[#A8A8AF] hover:text-white disabled:opacity-60"
+        >
+          {signingOut ? "Saindo…" : "Sair"}
+        </button>
       </nav>
       <p className="mt-auto px-4 py-4 text-xs text-[#666]">
         v{process.env.NEXT_PUBLIC_APP_VERSION || "0.1.0"} · {process.env.NEXT_PUBLIC_APP_ENV || "dev"}

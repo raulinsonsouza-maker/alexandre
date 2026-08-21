@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const memberLinks = [
   { href: "/academia", label: "Início" },
@@ -13,6 +14,19 @@ const memberLinks = [
 
 export function MemberNav({ name }: { name: string }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function onSignOut() {
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/signout", { method: "POST", credentials: "include" });
+    } catch {
+      // still leave
+    }
+    router.replace("/");
+    router.refresh();
+  }
 
   return (
     <>
@@ -35,9 +49,14 @@ export function MemberNav({ name }: { name: string }) {
               </Link>
             );
           })}
-          <Link href="/api/auth/signout" className="mt-auto rounded-md px-3 py-2 text-sm text-[#A8A8AF] hover:text-white">
-            Sair
-          </Link>
+          <button
+            type="button"
+            onClick={() => void onSignOut()}
+            disabled={signingOut}
+            className="mt-auto rounded-md px-3 py-2 text-left text-sm text-[#A8A8AF] hover:text-white disabled:opacity-60"
+          >
+            {signingOut ? "Saindo…" : "Sair"}
+          </button>
         </nav>
       </aside>
 
