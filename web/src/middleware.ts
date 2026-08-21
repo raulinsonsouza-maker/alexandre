@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+function sessionCookieName() {
+  const url = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "";
+  // Produção HTTPS (e login em /api/auth/login) usa o prefixo __Secure-
+  if (url.startsWith("https://") || process.env.NODE_ENV === "production") {
+    return "__Secure-authjs.session-token";
+  }
+  return "authjs.session-token";
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isAcademia = pathname.startsWith("/academia");
@@ -18,9 +27,13 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  const cookieName = sessionCookieName();
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
+    cookieName,
+    salt: cookieName,
+    secureCookie: cookieName.startsWith("__Secure-"),
   });
 
   if (!token?.id) {
