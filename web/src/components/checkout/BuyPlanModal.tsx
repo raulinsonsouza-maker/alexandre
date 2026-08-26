@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 export function BuyPlanModal(props: {
@@ -13,8 +14,22 @@ export function BuyPlanModal(props: {
 }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!props.open) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!props.open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [props.open]);
+
+  if (!props.open || !mounted) return null;
 
   async function startCheckout() {
     const body = props.moduleSlug
@@ -73,9 +88,21 @@ export function BuyPlanModal(props: {
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
-      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/10 bg-[#141416] p-6 text-white">
+  // Portal no body: o botão mora dentro de seções com z-index (hero z-3 vs main z-5),
+  // e um fixed dentro desse stacking context ficava atrás de "Conteúdo do módulo".
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[300] flex items-center justify-center bg-black/75 p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default"
+        aria-label="Fechar"
+        onClick={props.onClose}
+      />
+      <div className="relative z-[1] max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/10 bg-[#141416] p-6 text-white shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-[#f6b40a]">Criar conta</p>
@@ -117,7 +144,8 @@ export function BuyPlanModal(props: {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
