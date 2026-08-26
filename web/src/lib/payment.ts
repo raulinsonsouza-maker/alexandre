@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { writeAudit } from "@/lib/audit";
 import { purchaseEmailHtml, sendEmail } from "@/lib/email";
 import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/access";
-import { payUrlForOffer } from "@/lib/cakto";
 import { nanoid } from "nanoid";
 
 function paymentProvider() {
@@ -218,7 +217,7 @@ export async function createCheckout(params: {
       if (!plan.caktoOfferId) {
         throw new Error("Plano ainda não vinculado à Cakto. Tente novamente em instantes.");
       }
-      return { redirectUrl: payUrlForOffer(plan.caktoOfferId) };
+      return { redirectUrl: `/checkout?plan=${params.planSlug}` };
     }
     return { redirectUrl: `/checkout?plan=${params.planSlug}&pending=1` };
   }
@@ -264,7 +263,7 @@ export async function createCheckout(params: {
       if (!mod.caktoOfferId) {
         throw new Error("Módulo ainda não vinculado à Cakto. Escolha um plano ou tente mais tarde.");
       }
-      return { redirectUrl: payUrlForOffer(mod.caktoOfferId) };
+      return { redirectUrl: `/checkout?module=${params.moduleSlug}` };
     }
     return { redirectUrl: `/checkout?module=${params.moduleSlug}&pending=1` };
   }

@@ -4,6 +4,7 @@ import { createCheckout } from "@/lib/payment";
 import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { TransparentCheckout } from "@/components/checkout/TransparentCheckout";
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -11,7 +12,7 @@ function formatBRL(cents: number) {
 
 function providerLabel() {
   const p = process.env.PAYMENT_PROVIDER || "demo";
-  if (p === "cakto") return "Pagamento seguro na Cakto (Pix ou cartão). Use o mesmo e-mail desta conta.";
+  if (p === "cakto") return "Pagamento seguro na página (Pix ou cartão com 3DS).";
   if (p === "demo") return "Modo demonstração: o acesso é liberado automaticamente.";
   return `Gateway: ${p}`;
 }
@@ -48,6 +49,8 @@ export default async function CheckoutPage({
   const session = await auth();
   const sp = await searchParams;
   const provider = process.env.PAYMENT_PROVIDER || "demo";
+  const caktoClientId =
+    process.env.NEXT_PUBLIC_CAKTO_CLIENT_ID || process.env.CAKTO_CLIENT_ID || "";
 
   let title = "";
   let priceCents = 0;
@@ -56,11 +59,16 @@ export default async function CheckoutPage({
   let blockedReason: string | null = null;
   let kind: "plan" | "module" | null = null;
   let caktoReady = true;
+  let summaryLines: string[] = [];
 
   if (sp.plan) {
     const plan = await prisma.plan.findUnique({
       where: { slug: sp.plan },
-      include: { _count: { select: { modules: true } } },
+      include: {
+        modules: {
+          include: { module: { select: { title: true, code: true, sortOrder: true } } },
+        },
+      },
     });
     if (!plan || !plan.published) {
       return (
@@ -81,6 +89,16 @@ export default async function CheckoutPage({
     title = `Plano ${plan.name}`;
     priceCents = plan.priceCents;
     caktoReady = provider !== "cakto" || Boolean(plan.caktoOfferId);
+    const moduleTitles = [...plan.modules]
+      .sort((a, b) => a.module.sortOrder - b.module.sortOrder)
+      .map((pm) => pm.module.title);
+    summaryLines = moduleTitles.slice(0, 8);
+    if (moduleTitles.length > 8) {
+      summaryLines.push(`+ ${moduleTitles.length - 8} módulos`);
+    }
+    if (summaryLines.length === 0) {
+      summaryLines = ["Acesso aos módulos do plano na Academia"];
+    }
     if (session?.user && (await userAlreadyHasPlanAccess(session.user.id, plan.id))) {
       blockedReason = "Você já possui este plano. Acesse o Campus.";
     }
@@ -102,6 +120,7 @@ export default async function CheckoutPage({
     title = mod.title;
     priceCents = mod.priceCents;
     caktoReady = provider !== "cakto" || Boolean(mod.caktoOfferId);
+    summaryLines = ["Módulo avulso", "Acesso imediato na Academia após confirmação"];
     if (provider === "cakto" && mod.priceCents <= 0) {
       blockedReason = "Este módulo é bônus e não possui checkout avulso. Escolha um plano.";
     } else if (provider === "cakto" && !mod.caktoOfferId) {
@@ -128,7 +147,41 @@ export default async function CheckoutPage({
   }
 
   const checkoutQs = planSlug ? `plan=${planSlug}` : `module=${moduleSlug}`;
-  const payLabel = provider === "cakto" ? "Ir para pagamento" : "Pagar e liberar acesso";
+
+  if (provider === "cakto" && session?.user && !blockedReason && caktoReady) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true, email: true, phone: true },
+    });
+    if (!user) redirect(`/conta/entrar?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`);
+
+    return (
+      <div className="relative mx-auto max-w-5xl overflow-hidden px-4 py-12 md:py-16">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(241,201,107,0.08),transparent_50%)]"
+        />
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold text-white md:text-4xl">
+          Checkout
+        </h1>
+        <p className="mt-2 text-sm text-[#A8A8AF]">{providerLabel()}</p>
+        {sp.error && <p className="mt-4 text-sm text-red-400">{sp.error}</p>}
+        <div className="mt-8">
+          <TransparentCheckout
+            clientId={caktoClientId}
+            planSlug={planSlug}
+            moduleSlug={moduleSlug}
+            title={title}
+            priceCents={priceCents}
+            summaryLines={summaryLines}
+            userName={user.name}
+            userEmail={user.email}
+            userPhone={user.phone}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
@@ -141,11 +194,6 @@ export default async function CheckoutPage({
         <h2 className="mt-1 text-lg font-semibold text-[#F1C96B]">{title}</h2>
         <p className="mt-2 text-2xl text-white">{formatBRL(priceCents)}</p>
         <p className="mt-2 text-sm text-[#A8A8AF]">{providerLabel()}</p>
-        {session?.user?.email && provider === "cakto" && (
-          <p className="mt-2 text-sm text-white">
-            E-mail da compra: <span className="text-[#F1C96B]">{session.user.email}</span>
-          </p>
-        )}
       </div>
 
       {blockedReason ? (
@@ -181,11 +229,9 @@ export default async function CheckoutPage({
         <form action={checkoutAction} className="mt-6 space-y-4">
           {planSlug && <input type="hidden" name="planSlug" value={planSlug} />}
           {moduleSlug && <input type="hidden" name="moduleSlug" value={moduleSlug} />}
-          {provider !== "cakto" && (
-            <input className="input" name="couponCode" placeholder="Cupom (opcional)" />
-          )}
+          <input className="input" name="couponCode" placeholder="Cupom (opcional)" />
           <button className="btn w-full" type="submit">
-            {payLabel}
+            Pagar e liberar acesso
           </button>
         </form>
       )}
