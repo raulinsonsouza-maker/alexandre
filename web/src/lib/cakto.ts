@@ -21,7 +21,10 @@ export async function caktoGetToken() {
 
   const res = await fetch(`${apiBase()}/token/`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": "AlexandreJornadaEWM/1.0 (+https://alexandre.symbius.com.br)",
+    },
     body: new URLSearchParams({
       client_id: clientId,
       client_secret: clientSecret,
@@ -45,6 +48,7 @@ async function caktoFetch(path: string, init: RequestInit = {}) {
   const url = path.startsWith("http") ? path : `${apiBase()}${path.startsWith("/") ? "" : "/"}${path}`;
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${token}`);
+  headers.set("User-Agent", "AlexandreJornadaEWM/1.0 (+https://alexandre.symbius.com.br)");
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
@@ -137,6 +141,7 @@ export async function caktoCreatePayment(
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       "X-Idempotency-Key": idempotencyKey,
+      "User-Agent": "AlexandreJornadaEWM/1.0 (+https://alexandre.symbius.com.br)",
     },
     body: JSON.stringify(payload),
   });
