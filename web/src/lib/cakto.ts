@@ -125,7 +125,8 @@ export type CaktoPaymentResponse = {
 export type CaktoCreatePaymentBase = {
   customer: CaktoPaymentCustomer;
   items: Array<{ offerId: string; quantity?: number; offerType?: "main" }>;
-  antifraudProfilingAttemptReference: string;
+  /** Coletado no browser; a API pública atual rejeita o campo no body. */
+  antifraudProfilingAttemptReference?: string;
   metadata?: Record<string, unknown>;
   coupon?: string;
 };
@@ -178,7 +179,7 @@ export function caktoCreatePixPayment(
         quantity: i.quantity ?? 1,
         offerType: i.offerType ?? "main",
       })),
-      antifraudProfilingAttemptReference: input.antifraudProfilingAttemptReference,
+      // API pública rejeita antifraudProfilingAttemptReference (docs ≠ OpenAPI).
       ...(input.metadata ? { metadata: input.metadata } : {}),
       ...(input.coupon ? { coupon: input.coupon } : {}),
       ...(input.pixExpiresIn ? { pixExpiresIn: input.pixExpiresIn } : {}),
@@ -205,7 +206,7 @@ export function caktoCreateThreeDsPayment(
       })),
       card: { token: input.cardToken },
       ...(input.threeDSecure ? { threeDSecure: input.threeDSecure } : {}),
-      antifraudProfilingAttemptReference: input.antifraudProfilingAttemptReference,
+      // API pública rejeita antifraudProfilingAttemptReference (docs ≠ OpenAPI).
       ...(input.metadata ? { metadata: input.metadata } : {}),
       ...(input.coupon ? { coupon: input.coupon } : {}),
     },

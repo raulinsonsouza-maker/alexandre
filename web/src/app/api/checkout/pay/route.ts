@@ -123,14 +123,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Informe o plano ou módulo." }, { status: 400 });
   }
 
-  const antifraudRef = String(body.antifraudRef || "").trim();
-  if (!antifraudRef) {
-    return NextResponse.json(
-      { ok: false, error: "Referência antifraude ausente. Recarregue a página." },
-      { status: 400 },
-    );
-  }
-
   const doc = digitsOnly(String(body.customerDoc || ""));
   if (doc.length !== 11 && doc.length !== 14) {
     return NextResponse.json({ ok: false, error: "Informe um CPF ou CNPJ válido." }, { status: 400 });
@@ -223,8 +215,8 @@ export async function POST(req: Request) {
   const base = {
     customer,
     items: [{ offerId, quantity: 1, offerType: "main" as const }],
-    antifraudProfilingAttemptReference: antifraudRef,
-    metadata: { orderId: order.id, userId: user.id },
+    // metadata pública só aceita utm_* e sck
+    metadata: { sck: order.id },
   };
 
   try {
