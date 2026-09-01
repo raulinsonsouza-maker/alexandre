@@ -4,8 +4,31 @@ Monorepo da plataforma (Next.js + Prisma + Postgres).
 
 ## Produção
 
-- URL: https://alexandre.symbius.com.br
-- Deploy: Docker Swarm + Traefik (veja `deploy/stack.yml`)
+| Ambiente | URL | VPS |
+|----------|-----|-----|
+| Best One (principal) | https://bestoneacademy.com.br | `root@158.173.2.125` |
+| Symbius (legado) | https://alexandre.symbius.com.br | `root@5.75.172.83` |
+
+Deploy: Docker Swarm + Traefik (`deploy/stack.yml`). Secrets em `/opt/apps/alexandre/.env` na VPS.
+
+### Bestone (Easypanel)
+
+```bash
+cd /opt/apps/alexandre
+cp deploy/.env.bestone.example .env   # editar secrets
+./deploy/bootstrap-bestone.sh
+```
+
+Traefik usa rede `easypanel`, entrypoints `http`/`https`, resolver `letsencrypt`.
+
+### Hetzner (Symbius)
+
+```bash
+cd /opt/apps/alexandre
+set -a && source .env && set +a
+docker build -t alexandre-web:latest -f web/Dockerfile .
+./deploy/remote-up.sh
+```
 
 ## Desenvolvimento
 

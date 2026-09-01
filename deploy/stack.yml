@@ -4,7 +4,8 @@
 #   docker stack deploy -c deploy/stack.yml alexandre
 #
 # Build (na raiz do repo em /opt/apps/alexandre):
-#   docker build -t alexandre-web:latest -f web/Dockerfile .
+#   docker build --build-arg NEXT_PUBLIC_CAKTO_CLIENT_ID="$NEXT_PUBLIC_CAKTO_CLIENT_ID" \
+#     -t alexandre-web:latest -f web/Dockerfile .
 
 version: "3.8"
 
@@ -39,8 +40,8 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       AUTH_SECRET: ${AUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://alexandre.symbius.com.br}
-      AUTH_URL: ${NEXTAUTH_URL:-https://alexandre.symbius.com.br}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://${PUBLIC_HOST:-alexandre.symbius.com.br}}
+      AUTH_URL: ${NEXTAUTH_URL:-https://${PUBLIC_HOST:-alexandre.symbius.com.br}}
       AUTH_TRUST_HOST: "true"
       APP_ENV: ${APP_ENV:-production}
       APP_VERSION: ${APP_VERSION:-0.1.0}
@@ -51,14 +52,14 @@ services:
       CAKTO_WEBHOOK_SECRET: ${CAKTO_WEBHOOK_SECRET:-}
       NEXT_PUBLIC_CAKTO_CLIENT_ID: ${NEXT_PUBLIC_CAKTO_CLIENT_ID:-}
       CAKTO_API_BASE: ${CAKTO_API_BASE:-https://api.cakto.com.br/public_api}
-      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-https://alexandre.symbius.com.br}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-https://${PUBLIC_HOST:-alexandre.symbius.com.br}}
       CONTENT_PATH: /content/aulas-conteudo.json
     volumes:
       - /opt/apps/alexandre/data/media:/app/public/media
       - /opt/apps/alexandre/data/uploads:/app/public/uploads
     networks:
       - alexandre_internal
-      - traefik_proxy
+      - traefik_ext
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/conta/entrar"]
       interval: 20s
@@ -75,14 +76,14 @@ services:
         delay: 5s
       labels:
         - traefik.enable=true
-        - traefik.docker.network=traefik_proxy
-        - traefik.http.routers.alexandre.rule=Host(`alexandre.symbius.com.br`)
-        - traefik.http.routers.alexandre.entrypoints=websecure
+        - traefik.docker.network=${TRAEFIK_NETWORK:-traefik_proxy}
+        - traefik.http.routers.alexandre.rule=Host(`${PUBLIC_HOST:-alexandre.symbius.com.br}`)
+        - traefik.http.routers.alexandre.entrypoints=${TRAEFIK_ENTRYPOINT_HTTPS:-websecure}
         - traefik.http.routers.alexandre.tls=true
-        - traefik.http.routers.alexandre.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.alexandre.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencryptresolver}
         - traefik.http.services.alexandre.loadbalancer.server.port=3000
-        - traefik.http.routers.alexandre-http.rule=Host(`alexandre.symbius.com.br`)
-        - traefik.http.routers.alexandre-http.entrypoints=web
+        - traefik.http.routers.alexandre-http.rule=Host(`${PUBLIC_HOST:-alexandre.symbius.com.br}`)
+        - traefik.http.routers.alexandre-http.entrypoints=${TRAEFIK_ENTRYPOINT_HTTP:-web}
         - traefik.http.routers.alexandre-http.middlewares=alexandre-https-redirect
         - traefik.http.middlewares.alexandre-https-redirect.redirectscheme.scheme=https
         - traefik.http.middlewares.alexandre-https-redirect.redirectscheme.permanent=true
@@ -90,8 +91,10 @@ services:
 networks:
   alexandre_internal:
     driver: overlay
-  traefik_proxy:
+    attachable: true
+  traefik_ext:
     external: true
+    name: ${TRAEFIK_NETWORK:-traefik_proxy}
 
 volumes:
   alexandre_pgdata:

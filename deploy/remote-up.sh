@@ -11,4 +11,5 @@ set -a
 source .env
 set +a
 docker stack deploy -c deploy/stack.yml alexandre
+docker service update --force alexandre_web 2>/dev/null || true
 echo "Stack alexandre deployed. Check: docker service ls | grep alexandre"

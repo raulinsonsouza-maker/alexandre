@@ -17,6 +17,7 @@ fi
 echo "Running prisma migrate deploy..."
 docker run --rm \
   --network "$NET" \
+  -e HOME=/tmp \
   -e DATABASE_URL \
   -e CONTENT_PATH=/content/aulas-conteudo.json \
   alexandre-web:latest \
@@ -25,6 +26,7 @@ docker run --rm \
 echo "Running prisma db seed..."
 docker run --rm \
   --network "$NET" \
+  -e HOME=/tmp \
   -e DATABASE_URL \
   -e CONTENT_PATH=/content/aulas-conteudo.json \
   alexandre-web:latest \

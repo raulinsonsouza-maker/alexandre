@@ -13,6 +13,7 @@ dist/
 .env.*
 !.env.example
 !**/.env.example
+!deploy/.env.bestone.example
 web/.env
 web/.env.local
 
