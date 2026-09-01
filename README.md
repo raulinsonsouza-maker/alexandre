@@ -42,3 +42,5 @@ npm run dev
 ```
 
 Capas em `web/public/media` não vão para o Git (volume/rsync na VPS).
+
+Pagamento em produção: Checkout Transparente Mercado Pago (`PAYMENT_PROVIDER=mercadopago`). Webhook: `https://bestoneacademy.com.br/api/webhooks/mercadopago`. Cakto fica no código só para rollback.

@@ -105,7 +105,7 @@ export default async function AdminPlanDetailPage({
         <textarea className="input md:col-span-2 min-h-[100px]" name="bullets" defaultValue={bullets} />
         <label className="flex items-center gap-2 text-sm text-[#A8A8AF]">
           <input type="checkbox" name="checkoutEnabled" defaultChecked={plan.checkoutEnabled} />{" "}
-          Checkout habilitado
+          Checkout habilitado (usa o preço acima; Corporate deixe desmarcado)
         </label>
         <label className="flex items-center gap-2 text-sm text-[#A8A8AF]">
           <input type="checkbox" name="published" defaultChecked={plan.published} /> Publicado

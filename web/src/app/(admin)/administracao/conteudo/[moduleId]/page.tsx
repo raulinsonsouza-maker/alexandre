@@ -183,7 +183,9 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
           <input className="input" name="category" defaultValue={mod.category || ""} />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-[#A8A8AF]">Preço (R$)</label>
+          <label className="mb-1 block text-xs text-[#A8A8AF]">
+            Preço (R$) — checkout usa este valor ao publicar
+          </label>
           <input
             className="input"
             name="price"

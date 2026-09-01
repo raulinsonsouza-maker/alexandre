@@ -36,6 +36,15 @@ a {
   color: white;
 }
 
+.mp-field {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: #0f0e12;
+  overflow: hidden;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

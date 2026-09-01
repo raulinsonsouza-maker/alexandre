@@ -5,6 +5,7 @@ import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/acce
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { TransparentCheckout } from "@/components/checkout/TransparentCheckout";
+import { MercadoPagoCheckout } from "@/components/checkout/MercadoPagoCheckout";
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -12,6 +13,7 @@ function formatBRL(cents: number) {
 
 function providerLabel() {
   const p = process.env.PAYMENT_PROVIDER || "demo";
+  if (p === "mercadopago") return "Pagamento seguro na página (Pix, cartão ou boleto).";
   if (p === "cakto") return "Pagamento seguro na página (Pix ou cartão com 3DS).";
   if (p === "demo") return "Modo demonstração: o acesso é liberado automaticamente.";
   return `Gateway: ${p}`;
@@ -51,6 +53,7 @@ export default async function CheckoutPage({
   const provider = process.env.PAYMENT_PROVIDER || "demo";
   const caktoClientId =
     process.env.NEXT_PUBLIC_CAKTO_CLIENT_ID || process.env.CAKTO_CLIENT_ID || "";
+  const mpPublicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "";
 
   let title = "";
   let priceCents = 0;
@@ -58,7 +61,7 @@ export default async function CheckoutPage({
   let moduleSlug: string | undefined;
   let blockedReason: string | null = null;
   let kind: "plan" | "module" | null = null;
-  let caktoReady = true;
+  let gatewayReady = true;
   let summaryLines: string[] = [];
 
   if (sp.plan) {
@@ -88,7 +91,10 @@ export default async function CheckoutPage({
     planSlug = plan.slug;
     title = `Plano ${plan.name}`;
     priceCents = plan.priceCents;
-    caktoReady = provider !== "cakto" || Boolean(plan.caktoOfferId);
+    gatewayReady =
+      provider === "mercadopago"
+        ? plan.priceCents > 0
+        : provider !== "cakto" || Boolean(plan.caktoOfferId);
     const moduleTitles = [...plan.modules]
       .sort((a, b) => a.module.sortOrder - b.module.sortOrder)
       .map((pm) => pm.module.title);
@@ -119,9 +125,12 @@ export default async function CheckoutPage({
     moduleSlug = mod.slug;
     title = mod.title;
     priceCents = mod.priceCents;
-    caktoReady = provider !== "cakto" || Boolean(mod.caktoOfferId);
+    gatewayReady =
+      provider === "mercadopago"
+        ? mod.priceCents > 0
+        : provider !== "cakto" || Boolean(mod.caktoOfferId);
     summaryLines = ["Módulo avulso", "Acesso imediato na Academia após confirmação"];
-    if (provider === "cakto" && mod.priceCents <= 0) {
+    if (mod.priceCents <= 0) {
       blockedReason = "Este módulo é bônus e não possui checkout avulso. Escolha um plano.";
     } else if (provider === "cakto" && !mod.caktoOfferId) {
       blockedReason = "Compra avulsa deste módulo ainda não está disponível. Escolha um plano.";
@@ -147,10 +156,15 @@ export default async function CheckoutPage({
   }
 
   const checkoutQs = planSlug ? `plan=${planSlug}` : `module=${moduleSlug}`;
+  const showTransparent =
+    (provider === "cakto" || provider === "mercadopago") &&
+    Boolean(session?.user) &&
+    !blockedReason &&
+    gatewayReady;
 
-  if (provider === "cakto" && session?.user && !blockedReason && caktoReady) {
+  if (showTransparent) {
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: session!.user.id },
       select: { name: true, email: true, phone: true },
     });
     if (!user) redirect(`/conta/entrar?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`);
@@ -167,17 +181,31 @@ export default async function CheckoutPage({
         <p className="mt-2 text-sm text-[#A8A8AF]">{providerLabel()}</p>
         {sp.error && <p className="mt-4 text-sm text-red-400">{sp.error}</p>}
         <div className="mt-8">
-          <TransparentCheckout
-            clientId={caktoClientId}
-            planSlug={planSlug}
-            moduleSlug={moduleSlug}
-            title={title}
-            priceCents={priceCents}
-            summaryLines={summaryLines}
-            userName={user.name}
-            userEmail={user.email}
-            userPhone={user.phone}
-          />
+          {provider === "mercadopago" ? (
+            <MercadoPagoCheckout
+              publicKey={mpPublicKey}
+              planSlug={planSlug}
+              moduleSlug={moduleSlug}
+              title={title}
+              priceCents={priceCents}
+              summaryLines={summaryLines}
+              userName={user.name}
+              userEmail={user.email}
+              userPhone={user.phone}
+            />
+          ) : (
+            <TransparentCheckout
+              clientId={caktoClientId}
+              planSlug={planSlug}
+              moduleSlug={moduleSlug}
+              title={title}
+              priceCents={priceCents}
+              summaryLines={summaryLines}
+              userName={user.name}
+              userEmail={user.email}
+              userPhone={user.phone}
+            />
+          )}
         </div>
       </div>
     );
@@ -203,7 +231,7 @@ export default async function CheckoutPage({
             Ir à Academia
           </Link>
         </div>
-      ) : !caktoReady ? (
+      ) : !gatewayReady ? (
         <p className="mt-6 text-sm text-red-400">
           Este item ainda não está disponível para pagamento. Tente em instantes ou escolha um plano.
         </p>

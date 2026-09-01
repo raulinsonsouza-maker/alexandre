@@ -59,7 +59,9 @@ export default async function ModuloPage({
   const price = dbModule.priceCents;
   const hasAccess =
     session?.user ? await userAlreadyHasModuleAccess(session.user.id, dbModule.id) : false;
-  const canBuyAvulso = price > 0 && Boolean(dbModule.caktoOfferId);
+  const paymentProvider = process.env.PAYMENT_PROVIDER || "demo";
+  const canBuyAvulso =
+    price > 0 && (paymentProvider !== "cakto" || Boolean(dbModule.caktoOfferId));
   const isBonus = price <= 0;
 
   return (
@@ -157,7 +159,7 @@ export default async function ModuloPage({
                 {isBonus ? "Incluso" : formatBRL(price)}
               </span>
               {!isBonus && (
-                <p className="mt-2 text-sm text-[#a8a8a8]">Pagamento na Cakto · Pix ou cartão</p>
+                <p className="mt-2 text-sm text-[#a8a8a8]">Pagamento seguro · Pix, cartão ou boleto</p>
               )}
             </div>
             <div className="mt-6 flex flex-wrap gap-3">

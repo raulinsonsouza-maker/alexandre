@@ -60,7 +60,10 @@ export default async function AdminPlanosPage() {
   return (
     <div>
       <h1 className="text-3xl font-semibold text-white">Planos</h1>
-      <p className="mt-2 text-[#A8A8AF]">Pacotes Base / Pro / Expert / Corporate e vínculo de módulos.</p>
+      <p className="mt-2 text-[#A8A8AF]">
+        Pacotes Base / Pro / Expert / Corporate. Preço + checkout habilitado + publicar já abre a
+        cobrança na Academia.
+      </p>
 
       <form action={upsertPlan} className="panel mt-6 grid gap-3 md:grid-cols-2">
         <input className="input" name="slug" placeholder="slug (base, pro…)" required />

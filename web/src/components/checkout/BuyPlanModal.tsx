@@ -115,7 +115,7 @@ export function BuyPlanModal(props: {
           </button>
         </div>
         <p className="mt-2 text-sm text-[#a8a8a8]">
-          Crie sua conta de aluno. Em seguida você vai ao pagamento Cakto (Pix ou cartão) com este mesmo e-mail.
+          Crie sua conta de aluno. Em seguida você vai ao pagamento (Pix, cartão ou boleto) com este mesmo e-mail.
         </p>
 
         {error && <p className="mt-4 text-sm text-red-400">{error}</p>}

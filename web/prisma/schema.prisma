@@ -29,6 +29,7 @@ enum OrderStatus {
 enum PaymentMethod {
   PIX
   CARD
+  BOLETO
   MANUAL
   COUPON
 }
@@ -244,6 +245,7 @@ model Order {
   couponCode       String?
   gateway          String?
   gatewayPaymentId String?
+  gatewayPayload   Json?
   idempotencyKey   String?       @unique
   paidAt           DateTime?
   createdAt        DateTime      @default(now())

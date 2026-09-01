@@ -35,7 +35,8 @@ Abra http://localhost:3000
 - Admin: usuários, matrículas, pedidos, conteúdo, cupons, auditoria
 - CMS: criar módulos/aulas, publicar, upload de vídeo e materiais
 - Campus + player + progresso + certificado simples
-- Checkout em modo demo + webhook idempotente (`/api/webhooks/payment`)
+- Checkout transparente Mercado Pago (Pix, cartão, boleto) + webhook `/api/webhooks/mercadopago`
+- Checkout Cakto permanece como rollback (`PAYMENT_PROVIDER=cakto`)
 - LGPD export/delete, e-mail em modo log (Resend opcional), Sentry opcional, CI
 
 ## Postgres local

@@ -219,6 +219,9 @@ export async function createCheckout(params: {
       }
       return { redirectUrl: `/checkout?plan=${params.planSlug}` };
     }
+    if (paymentProvider() === "mercadopago") {
+      return { redirectUrl: `/checkout?plan=${params.planSlug}` };
+    }
     return { redirectUrl: `/checkout?plan=${params.planSlug}&pending=1` };
   }
 
@@ -262,6 +265,12 @@ export async function createCheckout(params: {
       }
       if (!mod.caktoOfferId) {
         throw new Error("Módulo ainda não vinculado à Cakto. Escolha um plano ou tente mais tarde.");
+      }
+      return { redirectUrl: `/checkout?module=${params.moduleSlug}` };
+    }
+    if (paymentProvider() === "mercadopago") {
+      if (mod.priceCents <= 0) {
+        throw new Error("Este módulo é bônus e não possui checkout.");
       }
       return { redirectUrl: `/checkout?module=${params.moduleSlug}` };
     }

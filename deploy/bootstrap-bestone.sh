@@ -25,6 +25,7 @@ mkdir -p data/media data/uploads backups
 echo "Building alexandre-web:latest..."
 docker build \
   --build-arg "NEXT_PUBLIC_CAKTO_CLIENT_ID=${NEXT_PUBLIC_CAKTO_CLIENT_ID:-}" \
+  --build-arg "NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=${NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY:-}" \
   -t alexandre-web:latest \
   -f web/Dockerfile .
 

@@ -20,9 +20,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV AUTH_SECRET=build-time-placeholder
 ENV NEXTAUTH_URL=http://localhost:3000
 ENV DATABASE_URL=postgresql://build:build@localhost:5432/build?schema=public
-# Public client id for Cakto SDK (inlined at build). Pass --build-arg from VPS .env.
+# Public client ids (inlined at build). Pass --build-arg from VPS .env.
 ARG NEXT_PUBLIC_CAKTO_CLIENT_ID=
 ENV NEXT_PUBLIC_CAKTO_CLIENT_ID=$NEXT_PUBLIC_CAKTO_CLIENT_ID
+ARG NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=
+ENV NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=$NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY
 RUN npx prisma generate
 RUN npm run build
 

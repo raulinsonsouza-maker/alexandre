@@ -84,7 +84,8 @@ export default async function ConteudoPage() {
     <div>
       <h1 className="text-3xl font-semibold text-white">Conteúdo</h1>
       <p className="mt-2 text-[#A8A8AF]">
-        Curso container + módulos da vitrine. Clique em um módulo para editar capa, título, vídeos e aulas.
+        Curso container + módulos da vitrine. Preço + publicar já gera o checkout (Pix, cartão ou
+        boleto). Não é preciso cadastrar o módulo em gateway externo.
       </p>
 
       {course && (
