@@ -17,6 +17,7 @@ export default async function HomePage() {
         featured: true,
         featuredOrder: true,
         code: true,
+        _count: { select: { lessons: { where: { published: true } } } },
       },
     }),
     prisma.siteBanner.findMany({
@@ -38,6 +39,7 @@ export default async function HomePage() {
     featured: m.featured,
     featuredOrder: m.featuredOrder,
     code: m.code,
+    lessonCount: m._count.lessons,
   }));
 
   const landingBanners: LandingBanner[] = banners.map((b) => ({
