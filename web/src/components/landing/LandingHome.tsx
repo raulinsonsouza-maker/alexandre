@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { useMemo, useState } from "react";
 
 export type LandingModule = {
   id: string;
@@ -14,6 +11,7 @@ export type LandingModule = {
   featured: boolean;
   featuredOrder: number;
   code: string;
+  lessonCount: number;
 };
 
 export type LandingBanner = {
@@ -24,282 +22,267 @@ export type LandingBanner = {
   linkUrl: string | null;
 };
 
+export type LandingPlan = {
+  slug: string;
+  name: string;
+  goal: string | null;
+  priceCents: number;
+  badge: string | null;
+  checkoutEnabled: boolean;
+  moduleCount: number;
+};
+
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function ModuleCard({ item }: { item: LandingModule }) {
-  const cover = item.coverPath || "/brand/gold-badge.png";
-  return (
-    <Link
-      href={`/modulos/${item.slug}`}
-      className="group relative aspect-video w-[min(310px,72vw)] shrink-0 overflow-hidden rounded-md border border-white/[0.07] bg-[#161616] text-left transition hover:z-10 hover:scale-[1.06] hover:border-[#f6b40a] hover:shadow-[0_22px_50px_rgba(0,0,0,.7)]"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={cover} alt={item.title} className="h-full w-full object-cover" loading="lazy" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#08080a]/90 via-transparent to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 transition group-hover:opacity-100">
-        <div className="mb-1 inline-block rounded bg-[#f6b40a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0a0a0c]">
-          {item.category}
-        </div>
-        <div className="font-[family-name:var(--font-display)] text-[17px] font-bold uppercase leading-tight text-white">
-          {item.title}
-        </div>
-        <p className="mt-1 line-clamp-2 text-xs text-[#bdbdbd]">{item.description}</p>
-        <p className="mt-2 text-sm font-extrabold text-[#f6b40a]">{formatBRL(item.priceCents)}</p>
-        <span className="mt-2 inline-block text-xs font-bold text-[#f6b40a]">Ver módulo →</span>
-      </div>
-      <div className="absolute inset-x-0 bottom-0 p-3 group-hover:hidden">
-        <div className="font-[family-name:var(--font-display)] text-sm font-bold uppercase text-white drop-shadow">
-          {item.title}
-        </div>
-      </div>
-    </Link>
-  );
-}
+const AUDIENCES = [
+  {
+    title: "Consultores SAP",
+    text: "Para quem precisa desenhar, configurar e defender a solução no projeto.",
+  },
+  {
+    title: "Key users e operação",
+    text: "Para quem sustenta o armazém no dia a dia: entrada, saída, inventário e monitoração.",
+  },
+  {
+    title: "Times e empresas",
+    text: "Para capacitar o time com a mesma formação e acompanhamento corporativo.",
+    href: "/empresas",
+  },
+];
+
+const FAQ = [
+  [
+    "Serve para quem está começando em EWM?",
+    "Sim. O plano Base cobre a fundação. Pro e Expert aprofundam operação e cenários avançados.",
+  ],
+  [
+    "Qual plano devo escolher?",
+    "Base para começar, Pro para operar o armazém, Expert para a trilha completa. Os planos são cumulativos — você evolui sem recomeçar do zero.",
+  ],
+  [
+    "Posso comprar só um módulo?",
+    "Sim, no catálogo. O plano vale quando você quer trilha organizada e mais conteúdo pelo mesmo investimento.",
+  ],
+  [
+    "O conteúdo é teórico ou prático?",
+    "Prático e orientado a projeto: processos reais de SAP EWM, com a lógica de implantação e sustentação.",
+  ],
+  [
+    "Isso substitui a certificação oficial SAP?",
+    "Não. O certificado da Jornada comprova a conclusão dos módulos na Academia. A certificação oficial SAP segue o processo da SAP.",
+  ],
+  [
+    "Quando o acesso é liberado?",
+    "Assim que o pagamento for confirmado. Entre na Academia com o mesmo e-mail da compra.",
+  ],
+  [
+    "Por quanto tempo tenho acesso?",
+    "Enquanto a matrícula estiver ativa. Você estuda no seu ritmo, sem turma fixa.",
+  ],
+  [
+    "E para capacitar o time da empresa?",
+    "O plano Corporate atende times com licenças e trilhas por perfil. Proposta sob consulta em Empresas.",
+  ],
+];
 
 export function LandingHome({
   modules,
   banners,
+  plans = [],
   heroTitle,
   heroSubtitle,
 }: {
   modules: LandingModule[];
   banners: LandingBanner[];
+  plans?: LandingPlan[];
   heroTitle?: string;
   heroSubtitle?: string;
 }) {
-  const featuredList = useMemo(
-    () =>
-      [...modules]
-        .filter((m) => m.featured)
-        .sort((a, b) => a.featuredOrder - b.featuredOrder),
-    [modules],
-  );
-
-  const defaultHero = featuredList[0] || modules[0];
-  const [heroId, setHeroId] = useState(defaultHero?.id || "");
-  const hero = modules.find((m) => m.id === heroId) || defaultHero;
+  const categories = [...new Set(modules.map((m) => m.category || "Geral"))];
+  const lessonCount = modules.reduce((sum, m) => sum + m.lessonCount, 0);
   const banner = banners[0];
-
-  const categories = useMemo(() => {
-    const map = new Map<string, LandingModule[]>();
-    for (const m of modules) {
-      const cat = m.category || "Geral";
-      if (!map.has(cat)) map.set(cat, []);
-      map.get(cat)!.push(m);
-    }
-    return [...map.entries()].map(([name, items]) => ({
-      name,
-      count: `${items.length} módulos`,
-      items,
-    }));
-  }, [modules]);
-
-  if (!hero) {
-    return (
-      <div className="px-6 py-20 text-[#A8A8AF]">
-        Nenhum módulo publicado. Cadastre no admin em Conteúdo.
-      </div>
-    );
-  }
-
-  const cover = banner?.imagePath || hero.coverPath || "/brand/gold-badge.png";
-  const title = banner?.title || hero.title;
-  const description = banner?.subtitle || hero.description || heroSubtitle || "";
-  const link = banner?.linkUrl || `/modulos/${hero.slug}`;
-  const priceCents = hero.priceCents;
-  const parcela = formatBRL(Math.round(priceCents / 5));
+  const cover = banner?.imagePath || "/brand/hero-academy.jpg";
+  const title = heroTitle || "Domine SAP EWM com a jornada completa";
+  const description =
+    heroSubtitle ||
+    "Formação prática em SAP EWM para consultores, key users e times de logística.";
 
   return (
-    <div className="bg-[#0a0a0c] text-white">
-      <section id="inicio" className="relative flex min-h-[88vh] items-end overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-right transition-opacity"
-          style={{ backgroundImage: `url('${cover}')` }}
-        />
-        <div className="absolute inset-0 bg-[#08080a]/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#08080a]/95 via-[#08080a]/78 to-[#08080a]/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/40 to-transparent" />
-
-        <div className="relative z-[3] max-w-[680px] px-[clamp(20px,4vw,56px)] pb-[clamp(56px,8vh,104px)]">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded border border-[#f6b40a]/50 bg-[#f6b40a]/15 px-3 py-1 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-[0.12em] text-[#f6b40a]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#f6b40a] shadow-[0_0_10px_#f6b40a]" />
-              Em destaque
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#cfcfcf]">{hero.category}</span>
+    <div className="landing">
+      <section className="hero hero-sales" id="inicio" aria-labelledby="hero-title">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="hero-media" src={cover} alt="" width={1600} height={900} />
+        <div className="hero-scrim" aria-hidden="true" />
+        <div className="hero-content">
+          <div className="eyebrow">
+            <span>Jornada SAP EWM</span>
+            <i /> Academy
           </div>
-          {heroTitle && (
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#f6b40a]/90">{heroTitle}</p>
-          )}
-          <h1 className="mb-4 font-[family-name:var(--font-display)] text-[clamp(38px,5.4vw,76px)] font-bold uppercase leading-[0.94] tracking-tight text-white drop-shadow">
-            {title}
-          </h1>
-          <p className="mb-4 max-w-[560px] text-[clamp(16px,1.5vw,20px)] leading-relaxed text-[#dcdcdc]">
-            {description}
-          </p>
-          <div className="mb-6 flex items-baseline gap-3">
-            <span className="font-[family-name:var(--font-display)] text-[28px] text-[#f6b40a]">
-              {formatBRL(priceCents)}
-            </span>
-            <span className="text-[12.5px] font-semibold text-[#9a9a9a]">
-              ou 5x de {parcela} · Pix com 10% off
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href={link}
-              className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-7 py-3 text-base font-bold text-[#0a0a0c] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(246,180,10,.4)]"
-            >
-              ▶ Ver módulo
+          <h1 id="hero-title">{title}</h1>
+          <p>{description}</p>
+          <div className="hero-actions">
+            <Link className="button button-primary" href="/planos">
+              Ver planos
             </Link>
-            <Link
-              href={`/checkout?module=${hero.slug}`}
-              className="inline-flex items-center gap-2 rounded border border-white/25 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur"
-            >
-              Comprar módulo
+            <Link className="button button-secondary" href="/modulos">
+              Explorar módulos
             </Link>
           </div>
-          {featuredList.length > 1 && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {featuredList.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setHeroId(f.id)}
-                  className={`rounded border px-3 py-1 text-xs ${f.id === hero.id ? "border-[#f6b40a] text-[#f6b40a]" : "border-white/20 text-[#aaa]"}`}
-                >
-                  {f.title}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="absolute bottom-[clamp(20px,4vh,40px)] right-[clamp(20px,4vw,56px)] z-[3] flex items-center gap-2 font-[family-name:var(--font-display)] text-[13px] font-semibold tracking-[0.14em] text-[#9a9a9a]">
-          <span>{modules.length} MÓDULOS</span>
-          <span className="opacity-40">•</span>
-          <span>{categories.length} TRILHAS</span>
         </div>
       </section>
 
-      <main id="modulos" className="relative z-[5] -mt-11 pb-10">
-        {categories.map((cat) => (
-          <section key={cat.name} className="relative mb-1 py-3">
-            <div className="mb-1 flex items-baseline gap-3 px-[clamp(20px,4vw,56px)]">
-              <h2 className="font-[family-name:var(--font-display)] text-[clamp(20px,2.2vw,26px)] font-bold text-white">
-                {cat.name}
-              </h2>
-              <span className="text-xs font-bold tracking-wide text-[#f6b40a]/85">{cat.count}</span>
-            </div>
-            <div className="flex gap-3.5 overflow-x-auto px-[clamp(20px,4vw,56px)] py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {cat.items.map((item) => (
-                <ModuleCard key={item.id} item={item} />
-              ))}
-            </div>
-          </section>
-        ))}
-      </main>
-
-      <section className="mx-auto max-w-[1140px] px-[clamp(20px,4vw,56px)] pb-[clamp(56px,8vw,96px)] pt-[clamp(24px,4vw,40px)]">
-        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
-          Pacotes
-        </span>
-        <h2 className="mb-6 mt-3 font-[family-name:var(--font-display)] text-[clamp(26px,3.4vw,42px)] font-bold uppercase leading-tight">
-          Escolha o <span className="text-[#f6b40a]">plano ideal</span> para você
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            { tag: "Base", title: "Plano Base", desc: "6 módulos · R$ 397 — fundamentos, estrutura e Warehouse Monitor.", href: "/planos/base" },
-            { tag: "Pro", title: "Plano Pro", desc: "28 módulos · R$ 697 — tudo do Base + processos, HU, RF e waves.", href: "/planos/pro", premium: true },
-            { tag: "Expert", title: "Plano Expert", desc: "45 módulos · R$ 1.497 — tudo do Pro + QM, produção, TM e MFS.", href: "/planos/expert" },
-          ].map((t) => (
-            <Link
-              key={t.title}
-              href={t.href}
-              className={`relative block rounded-xl border p-6 transition hover:-translate-y-1 ${
-                t.premium
-                  ? "border-[#f6b40a]/50 bg-gradient-to-b from-[#1c1706] to-[#141416]"
-                  : "border-white/10 bg-[#141416] hover:border-[#f6b40a]"
-              }`}
-            >
-              {t.premium && (
-                <span className="absolute -top-2.5 right-5 rounded bg-[#f6b40a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0a0a0c]">
-                  Recomendado
-                </span>
-              )}
-              <span className="mb-3 inline-block rounded bg-[#f6b40a]/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#f6b40a]">
-                {t.tag}
-              </span>
-              <h3 className="font-[family-name:var(--font-display)] text-[26px] font-bold uppercase text-white">{t.title}</h3>
-              <p className="mt-2 mb-4 text-sm leading-relaxed text-[#a8a8a8]">{t.desc}</p>
-              <span className="text-sm font-bold text-[#f6b40a]">Ver página de venda →</span>
-            </Link>
-          ))}
+      <section className="landing-stats" aria-label="Números da jornada">
+        <div>
+          <strong>{modules.length || 45}</strong>
+          <span>módulos práticos</span>
         </div>
-        <p className="mt-4 text-sm text-[#A8A8AF]">
-          Corporate: mesmos 45 módulos + gestão de times, sob consulta —{" "}
-          <Link href="/planos" className="text-[#F1C96B]">
-            fale com o comercial
-          </Link>
-          .
-        </p>
+        <div>
+          <strong>{categories.length || 11}</strong>
+          <span>trilhas temáticas</span>
+        </div>
+        <div>
+          <strong>{lessonCount > 0 ? lessonCount : "400+"}</strong>
+          <span>aulas publicadas</span>
+        </div>
+        <div>
+          <strong>+15</strong>
+          <span>anos em SAP EWM</span>
+        </div>
       </section>
 
-      <section id="sobre" className="mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)] py-[clamp(64px,9vw,120px)]">
-        <div className="grid items-center gap-10 md:grid-cols-2">
-          <div>
-            <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
-              Sobre a Jornada
-            </span>
-            <h2 className="mt-3 mb-5 font-[family-name:var(--font-display)] text-[clamp(30px,4vw,52px)] font-bold uppercase leading-tight">
-              Domine o SAP EWM <span className="text-[#f6b40a]">de ponta a ponta</span>
-            </h2>
-            <p className="mb-4 text-[17px] leading-relaxed text-[#c8c8c8]">
-              A Jornada SAP EWM Academy organiza o conhecimento em planos e módulos avulsos — da arquitetura aos
-              processos inbound, outbound, produção, qualidade e automação.
-            </p>
-            <p className="text-[17px] leading-relaxed text-[#c8c8c8]">
-              São <strong className="text-white">{modules.length} módulos</strong> para consultores, key users e
-              profissionais de logística.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              [String(modules.length), "Módulos práticos"],
-              [String(categories.length), "Trilhas temáticas"],
-              ["100%", "Foco em operação real"],
-              ["2026", "Conteúdo atualizado"],
-            ].map(([n, l]) => (
-              <div key={l} className="rounded-lg border border-white/10 bg-[#141416] p-5">
-                <div className="font-[family-name:var(--font-display)] text-4xl text-[#f6b40a]">{n}</div>
-                <div className="mt-1.5 text-[13px] text-[#aaa]">{l}</div>
-              </div>
+      <section className="landing-block" id="oferta">
+        <div className="landing-wrap">
+          <header className="landing-heading">
+            <span className="kicker">Para quem é</span>
+            <h2>Consultores, operação e empresas</h2>
+          </header>
+          <div className="landing-grid-3">
+            {AUDIENCES.map((item) => (
+              <article key={item.title} className="landing-card">
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+                {"href" in item && item.href ? (
+                  <Link href={item.href} className="landing-card-link">
+                    Ver formação para empresas
+                  </Link>
+                ) : null}
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section
-        id="especialista"
-        className="border-t border-white/10 bg-gradient-to-b from-[#0e0e11] to-[#0a0a0c] px-[clamp(20px,4vw,56px)] py-[clamp(56px,8vw,108px)]"
-      >
-        <div className="mx-auto max-w-[1140px] text-center">
-          <h3 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,36px)] font-bold uppercase">
-            Pronto para dominar o SAP EWM?
-          </h3>
-          <p className="mx-auto mt-3 max-w-2xl text-[#a8a8a8]">
-            Escolha um plano ou compre módulos avulsos na vitrine.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/planos" className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
-              Ver planos
-            </Link>
-            <Link href="/#modulos" className="rounded border border-white/20 px-7 py-3 font-semibold text-white">
-              Ver módulos
+      <section className="landing-block" id="planos">
+        <div className="landing-wrap">
+          <header className="landing-heading">
+            <span className="kicker">Planos</span>
+            <h2>Base, Pro, Expert e Corporate</h2>
+            <p>Planos cumulativos. Comece pelo Base e evolua quando o projeto pedir mais profundidade.</p>
+          </header>
+          {plans.length > 0 ? (
+            <div className="landing-plans">
+              {plans.map((plan) => {
+                const featured = plan.badge?.toLowerCase().includes("recomend");
+                return (
+                  <article key={plan.slug} className={featured ? "landing-plan is-featured" : "landing-plan"}>
+                    {plan.badge ? <span className="landing-plan-badge">{plan.badge}</span> : null}
+                    <h3>{plan.name}</h3>
+                    {plan.goal ? <p>{plan.goal}</p> : null}
+                    <strong>{plan.checkoutEnabled ? formatBRL(plan.priceCents) : "Sob consulta"}</strong>
+                    <small>{plan.moduleCount} módulos incluídos</small>
+                    <Link href={`/planos/${plan.slug}`}>{plan.checkoutEnabled ? `Ver ${plan.name}` : "Ver Corporate"}</Link>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="landing-empty">Os planos aparecem aqui assim que forem publicados.</p>
+          )}
+        </div>
+      </section>
+
+      <section className="landing-block" id="sobre">
+        <div className="landing-wrap landing-mentor">
+          <div className="landing-mentor-photo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/alexandre.jpeg" alt="Alexandre Santos Brunelli, mentor da Jornada SAP EWM" />
+            <span>Mentor da Jornada</span>
+          </div>
+          <div>
+            <span className="kicker">Quem conduz</span>
+            <h2>Aprenda com quem atua em projetos reais de alta criticidade</h2>
+            <p>
+              Alexandre Santos Brunelli é consultor SAP sênior e instrutor — mais de 25 anos no ecossistema SAP e mais
+              de 15 dedicados ao EWM, em projetos nacionais e internacionais.
+            </p>
+            <Link className="button button-secondary" href="/sobre">
+              Conhecer o especialista
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="landing-block">
+        <div className="landing-wrap">
+          <header className="landing-heading">
+            <span className="kicker">Conteúdo</span>
+            <h2>As trilhas da jornada</h2>
+          </header>
+          {categories.length > 0 ? (
+            <div className="landing-tracks">
+              {categories.map((name) => {
+                const count = modules.filter((m) => (m.category || "Geral") === name).length;
+                return (
+                  <Link key={name} href="/modulos" className="landing-track">
+                    <strong>{name}</strong>
+                    <span>
+                      {count} {count === 1 ? "módulo" : "módulos"}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
+          <div className="landing-catalog-cta">
+            <Link className="button button-secondary" href="/modulos">
+              Ver todos os módulos
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-block" id="faq">
+        <div className="landing-wrap landing-faq-wrap">
+          <header className="landing-heading">
+            <span className="kicker">Dúvidas</span>
+            <h2>Perguntas frequentes</h2>
+          </header>
+          <div className="landing-faq">
+            {FAQ.map(([q, a]) => (
+              <details key={q}>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="certificate-banner">
+        <div>
+          <span className="kicker">Comece agora</span>
+          <h2>Entre na Academia</h2>
+          <p>Escolha um plano ou crie sua conta para acompanhar o progresso.</p>
+        </div>
+        <div className="hero-actions">
+          <Link className="button button-primary" href="/planos">
+            Ver planos
+          </Link>
+          <Link className="button button-secondary" href="/conta/cadastro">
+            Criar conta
+          </Link>
         </div>
       </section>
     </div>
