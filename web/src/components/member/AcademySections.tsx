@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { CourseCard } from "@/components/ui/CourseCard";
-import { CourseRail } from "@/components/ui/CourseRail";
-import type { AcademyModuleCard, AcademyRail } from "@/lib/academy-dashboard";
+import type { AcademyModuleCard } from "@/lib/academy-dashboard";
 
 export function AcademyEmptyState({ name }: { name: string }) {
   return (
