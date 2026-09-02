@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MaskedInput } from "@/components/ui/MaskedInput";
+import { applyMask, digitsOnly } from "@/lib/input-masks";
 
 type Method = "pix" | "card" | "boleto";
 
@@ -77,10 +79,6 @@ function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function digitsOnly(value: string) {
-  return value.replace(/\D/g, "");
-}
-
 function loadMpScript(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   if (window.MercadoPago) return Promise.resolve();
@@ -123,7 +121,7 @@ export function MercadoPagoCheckout(props: {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [doc, setDoc] = useState("");
-  const [phone, setPhone] = useState(props.userPhone || "");
+  const [phone, setPhone] = useState(applyMask("phone", props.userPhone || ""));
   const [pix, setPix] = useState<PixData | null>(null);
   const [boleto, setBoleto] = useState<BoletoData | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -481,24 +479,24 @@ export function MercadoPagoCheckout(props: {
         <div className="mt-5 space-y-3">
           <label className="block text-sm text-[#A8A8AF]">
             CPF ou CNPJ
-            <input
+            <MaskedInput
               className="input mt-1"
+              mask="cpfCnpj"
               inputMode="numeric"
               autoComplete="off"
               value={doc}
               onChange={(e) => setDoc(e.target.value)}
-              placeholder="Somente números"
             />
           </label>
           <label className="block text-sm text-[#A8A8AF]">
             Telefone com DDD
-            <input
+            <MaskedInput
               className="input mt-1"
+              mask="phone"
               inputMode="tel"
               autoComplete="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="11999999999"
             />
           </label>
         </div>
@@ -633,13 +631,14 @@ export function MercadoPagoCheckout(props: {
               <>
                 <label className="block text-sm text-[#A8A8AF]">
                   CEP
-                  <input
+                  <MaskedInput
                     className="input mt-1"
+                    mask="cep"
                     inputMode="numeric"
+                    autoComplete="postal-code"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                     onBlur={lookupCep}
-                    placeholder="00000000"
                     required
                   />
                 </label>

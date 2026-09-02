@@ -1,4 +1,4 @@
-import { requireSession } from "@/lib/session";
+﻿import { MaskedInput } from "@/components/ui/MaskedInput";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
@@ -60,7 +60,15 @@ export default async function PerfilPage({
         <form action={updateProfile} className="mt-8 space-y-4">
           <input className="input" name="name" defaultValue={user.name} placeholder="Nome" />
           <input className="input" defaultValue={user.email} disabled />
-          <input className="input" name="phone" defaultValue={user.phone || ""} placeholder="Telefone" />
+          <MaskedInput
+            className="input"
+            name="phone"
+            mask="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            defaultValue={user.phone || ""}
+          />
           <input className="input" name="company" defaultValue={user.company || ""} placeholder="Empresa" />
           <input className="input" name="jobTitle" defaultValue={user.jobTitle || ""} placeholder="Cargo" />
           <div className="grid grid-cols-2 gap-3">

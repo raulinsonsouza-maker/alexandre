@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { requireRole } from "@/lib/session";
 import { writeAudit } from "@/lib/audit";
 import bcrypt from "bcryptjs";
@@ -143,7 +144,14 @@ export default async function AdminUsersPage({
           <input type="hidden" name="id" value={editing.id} />
           <input className="input" name="name" defaultValue={editing.name} required />
           <input className="input" name="email" type="email" defaultValue={editing.email} required />
-          <input className="input" name="phone" defaultValue={editing.phone || ""} placeholder="Telefone" />
+          <MaskedInput
+            className="input"
+            name="phone"
+            mask="phone"
+            type="tel"
+            inputMode="tel"
+            defaultValue={editing.phone || ""}
+          />
           <input className="input" name="company" defaultValue={editing.company || ""} placeholder="Empresa" />
           <select className="input" name="role" defaultValue={editing.role}>
             <option value="STUDENT">Aluno</option>

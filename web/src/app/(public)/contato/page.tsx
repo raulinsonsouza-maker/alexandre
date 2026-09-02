@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 
 const WA_LINK =
   "https://wa.me/5511974389297?text=" +
@@ -184,7 +185,14 @@ export default function ContatoPage() {
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
                         Telefone / WhatsApp <span className="text-[#f7bd31]">*</span>
                       </span>
-                      <input className="input" name="telefone" type="tel" placeholder="(11) 9 9999-9999" />
+                      <MaskedInput
+                        className="input"
+                        name="telefone"
+                        mask="phone"
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
+                      />
                       {errors.telefone && <span className="text-[12.5px] text-[#ff6b5e]">{errors.telefone}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5">

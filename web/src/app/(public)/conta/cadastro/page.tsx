@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { writeAudit } from "@/lib/audit";
 import { sendEmail, welcomeEmailHtml } from "@/lib/email";
 import { safeCallbackUrl } from "@/lib/callback-url";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 async function registerAction(formData: FormData) {
   "use server";
@@ -68,32 +68,7 @@ export default async function CadastroPage({
       <p className="mt-2 text-[#A8A8AF]">Crie sua conta de aluno.</p>
       {sp.error === "exists" && <p className="mt-4 text-sm text-red-400">E-mail já cadastrado.</p>}
       {sp.error === "1" && <p className="mt-4 text-sm text-red-400">Preencha todos os campos e aceite os termos.</p>}
-      <form action={registerAction} className="mt-8 space-y-4">
-        {sp.callbackUrl && safeCallbackUrl(sp.callbackUrl) ? (
-          <input type="hidden" name="callbackUrl" value={safeCallbackUrl(sp.callbackUrl) || ""} />
-        ) : null}
-        <input className="input" name="name" placeholder="Nome completo" required />
-        <input className="input" name="email" type="email" placeholder="E-mail" required />
-        <input className="input" name="phone" placeholder="Telefone" />
-        <input className="input" name="password" type="password" placeholder="Senha (mín. 6)" required minLength={6} />
-        <label className="flex items-start gap-2 text-sm text-[#A8A8AF]">
-          <input type="checkbox" name="lgpd" className="mt-1" required />
-          <span>
-            Li e aceito os{" "}
-            <Link href="/legal/termos" className="text-[#f7bd31]">
-              Termos
-            </Link>{" "}
-            e a{" "}
-            <Link href="/legal/privacidade" className="text-[#f7bd31]">
-              Privacidade
-            </Link>
-            .
-          </span>
-        </label>
-        <button className="btn w-full" type="submit">
-          Criar conta
-        </button>
-      </form>
+      <RegisterForm action={registerAction} callbackUrl={safeCallbackUrl(sp.callbackUrl) || undefined} />
     </div>
   );
 }

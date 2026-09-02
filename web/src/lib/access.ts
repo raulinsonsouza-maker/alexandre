@@ -73,6 +73,43 @@ export async function userAlreadyHasModuleAccess(userId: string, moduleId: strin
   return accessible.has(moduleId);
 }
 
+export type PlanAccessStatus = "owned" | "included" | "available";
+
+/** Status de cada plano para vitrine (matrícula direta ou incluso em tier superior). */
+export async function resolvePlanAccessForUser(
+  userId: string,
+  plans: { id: string; slug: string; sortOrder: number }[],
+): Promise<Map<string, PlanAccessStatus>> {
+  const result = new Map<string, PlanAccessStatus>();
+
+  if (await isAdmin(userId)) {
+    for (const p of plans) result.set(p.id, "owned");
+    return result;
+  }
+
+  const enrollments = await prisma.enrollment.findMany({
+    where: { userId, status: "ACTIVE", planId: { not: null } },
+    select: { planId: true, plan: { select: { sortOrder: true } } },
+  });
+
+  const ownedIds = new Set(
+    enrollments.map((e) => e.planId).filter((id): id is string => Boolean(id)),
+  );
+  const maxSortOrder = Math.max(0, ...enrollments.map((e) => e.plan?.sortOrder ?? 0));
+
+  for (const p of plans) {
+    if (ownedIds.has(p.id)) {
+      result.set(p.id, "owned");
+    } else if (p.slug !== "corporate" && maxSortOrder > p.sortOrder) {
+      result.set(p.id, "included");
+    } else {
+      result.set(p.id, "available");
+    }
+  }
+
+  return result;
+}
+
 export async function userAlreadyHasPlanAccess(userId: string, planId: string) {
   if (await isAdmin(userId)) return true;
   const enr = await prisma.enrollment.findFirst({

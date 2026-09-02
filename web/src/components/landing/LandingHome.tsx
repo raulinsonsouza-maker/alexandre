@@ -264,11 +264,12 @@ export function LandingHome({
             <span className="kicker">Investimento</span>
             <h2>Escolha o pacote certo para o seu momento</h2>
             <p>
-              Planos cumulativos: o Pro inclui o Base, o Expert inclui o Pro. Prefere um tema só?{" "}
+              Invista no que o seu projeto exige hoje — clareza, operação ou desenho completo. Cada plano inclui o
+              anterior, para você evoluir sem pagar duas vezes pelo mesmo conteúdo.{" "}
               <Link href="/modulos" className="landing-inline-link">
-                Veja módulos avulsos
-              </Link>
-              .
+                Prefere um módulo só?
+              </Link>{" "}
+              Veja a vitrine avulsa.
             </p>
           </header>
           {plans.length > 0 ? (

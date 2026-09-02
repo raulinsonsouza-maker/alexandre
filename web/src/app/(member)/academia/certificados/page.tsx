@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
@@ -10,33 +11,57 @@ export default async function CertificadosPage() {
   });
 
   return (
-    <div className="member-page">
-      <h1 className="text-3xl font-semibold text-white">Certificados</h1>
-      <p className="mt-2 text-[#A8A8AF]">Emitidos ao concluir todas as aulas de um módulo.</p>
-      <div className="mt-8 space-y-3">
-        {certs.length === 0 && <p className="text-[#A8A8AF]">Nenhum certificado emitido ainda.</p>}
-        {certs.map((c) => {
-          const moduleTitle = c.module?.title || c.course.title;
-          const moduleCode = c.module?.code ? `${c.module.code} · ` : "";
-          return (
-            <div key={c.id} className="panel">
-              <h2 className="font-semibold text-[#f7bd31]">
-                {moduleCode}
-                {moduleTitle}
-              </h2>
-              <p className="mt-1 text-sm text-[#A8A8AF]">Código {c.code}</p>
-              <p className="text-sm text-[#A8A8AF]">Emitido em {c.issuedAt.toLocaleDateString("pt-BR")}</p>
-              <div className="mt-4 rounded border border-[#2A2D32] bg-[#0f0e12] p-6 text-center">
-                <p className="text-xs uppercase tracking-widest text-[#A8A8AF]">Certificado de módulo</p>
-                <p className="mt-2 text-xl font-semibold text-white">{session.user.name}</p>
-                <p className="mt-1 text-sm text-[#A8A8AF]">
-                  concluiu {moduleTitle}
-                  {c.course?.title ? ` · ${c.course.title}` : ""}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+    <div className="academy-subpage">
+      <header className="academy-subpage-head">
+        <span className="kicker">Certificados</span>
+        <h1>Suas conquistas</h1>
+        <p className="academy-subpage-lead">
+          Emitidos automaticamente ao concluir todas as aulas de um módulo.
+        </p>
+      </header>
+
+      <div className="academy-subpage-body">
+        {certs.length === 0 ? (
+          <div className="panel">
+            <p className="academy-module-empty">Nenhum certificado emitido ainda.</p>
+            <p className="academy-subpage-lead" style={{ marginTop: 8 }}>
+              Conclua as aulas de um módulo para liberar o certificado.{" "}
+              <Link href="/academia/catalogo" className="text-[#f7bd31]">
+                Ver módulos
+              </Link>
+              .
+            </p>
+          </div>
+        ) : (
+          <div className="academy-cert-list">
+            {certs.map((c) => {
+              const moduleTitle = c.module?.title || c.course.title;
+              const moduleCode = c.module?.code ? `${c.module.code} · ` : "";
+              return (
+                <article key={c.id} className="panel academy-cert-card">
+                  <div>
+                    <h2 className="academy-cert-title">
+                      {moduleCode}
+                      {moduleTitle}
+                    </h2>
+                    <p className="academy-cert-meta">Código {c.code}</p>
+                    <p className="academy-cert-meta">
+                      Emitido em {c.issuedAt.toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                  <div className="academy-cert-preview">
+                    <p className="academy-cert-preview-kicker">Certificado de módulo</p>
+                    <p className="academy-cert-preview-name">{session.user.name}</p>
+                    <p className="academy-cert-preview-text">
+                      concluiu {moduleTitle}
+                      {c.course?.title ? ` · ${c.course.title}` : ""}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MaskedInput } from "@/components/ui/MaskedInput";
+import { applyMask, digitsOnly } from "@/lib/input-masks";
 
 type Method = "pix" | "card";
 
@@ -58,10 +60,6 @@ function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function digitsOnly(value: string) {
-  return value.replace(/\D/g, "");
-}
-
 function loadCaktoScript(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   if (window.Cakto?.CaktoSDK) return Promise.resolve();
@@ -116,7 +114,7 @@ export function TransparentCheckout(props: {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [doc, setDoc] = useState("");
-  const [phone, setPhone] = useState(props.userPhone || "");
+  const [phone, setPhone] = useState(applyMask("phone", props.userPhone || ""));
   const [pix, setPix] = useState<PixData | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [pixStatus, setPixStatus] = useState("Aguardando pagamento…");
@@ -389,24 +387,24 @@ export function TransparentCheckout(props: {
         <div className="mt-5 space-y-3">
           <label className="block text-sm text-[#A8A8AF]">
             CPF ou CNPJ
-            <input
+            <MaskedInput
               className="input mt-1"
+              mask="cpfCnpj"
               inputMode="numeric"
               autoComplete="off"
               value={doc}
               onChange={(e) => setDoc(e.target.value)}
-              placeholder="Somente números"
             />
           </label>
           <label className="block text-sm text-[#A8A8AF]">
             Telefone com DDD
-            <input
+            <MaskedInput
               className="input mt-1"
+              mask="phone"
               inputMode="tel"
               autoComplete="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="11999999999"
             />
           </label>
         </div>
@@ -478,8 +476,9 @@ export function TransparentCheckout(props: {
             </label>
             <label className="block text-sm text-[#A8A8AF]">
               Número
-              <input
+              <MaskedInput
                 className="input mt-1"
+                mask="cardNumber"
                 inputMode="numeric"
                 autoComplete="cc-number"
                 value={cardNumber}
@@ -490,10 +489,10 @@ export function TransparentCheckout(props: {
             <div className="grid grid-cols-3 gap-3">
               <label className="block text-sm text-[#A8A8AF]">
                 Mês
-                <input
+                <MaskedInput
                   className="input mt-1"
+                  mask="expMonth"
                   inputMode="numeric"
-                  placeholder="MM"
                   autoComplete="cc-exp-month"
                   value={expMonth}
                   onChange={(e) => setExpMonth(e.target.value)}
@@ -502,10 +501,10 @@ export function TransparentCheckout(props: {
               </label>
               <label className="block text-sm text-[#A8A8AF]">
                 Ano
-                <input
+                <MaskedInput
                   className="input mt-1"
+                  mask="expYear"
                   inputMode="numeric"
-                  placeholder="AA"
                   autoComplete="cc-exp-year"
                   value={expYear}
                   onChange={(e) => setExpYear(e.target.value)}
@@ -514,8 +513,9 @@ export function TransparentCheckout(props: {
               </label>
               <label className="block text-sm text-[#A8A8AF]">
                 CVV
-                <input
+                <MaskedInput
                   className="input mt-1"
+                  mask="cvv"
                   inputMode="numeric"
                   autoComplete="cc-csc"
                   value={cvv}

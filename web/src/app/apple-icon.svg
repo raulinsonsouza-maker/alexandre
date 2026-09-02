@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Jornada SAP">
+  <defs>
+    <linearGradient id="js-gold" x1="22" y1="16" x2="164" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffcf61"/>
+      <stop offset="100%" stop-color="#f7bd31"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#js-gold)"/>
+  <text
+    x="90"
+    y="122"
+    text-anchor="middle"
+    font-family="Arial Black, Arial, Helvetica, sans-serif"
+    font-size="76"
+    font-weight="900"
+    fill="#151005"
+    letter-spacing="-7"
+  >JS</text>
+</svg>

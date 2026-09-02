@@ -16,10 +16,10 @@ export type AcademyNavModule = {
 };
 
 const navLinks = [
-  { href: "/academia", label: "Início", hash: "" },
-  { href: "/academia#minha-jornada", label: "Minha jornada", hash: "minha-jornada" },
-  { href: "/academia#catalogo", label: "Catálogo", hash: "catalogo" },
-  { href: "/academia/certificados", label: "Certificados", hash: "" },
+  { href: "/academia", label: "Início", match: "exact" as const },
+  { href: "/academia/jornada", label: "Minha jornada", match: "prefix" as const },
+  { href: "/academia/catalogo", label: "Catálogo", match: "prefix" as const },
+  { href: "/academia/certificados", label: "Certificados", match: "prefix" as const },
 ];
 
 export function MemberChrome({
@@ -110,9 +110,9 @@ export function MemberChrome({
         <nav className="primary-nav" aria-label="Navegação principal">
           {navLinks.map((l) => {
             const active =
-              l.href === "/academia"
-                ? pathname === "/academia"
-                : pathname === l.href || (l.hash === "" && pathname.startsWith(l.href));
+              l.match === "exact"
+                ? pathname === l.href
+                : pathname === l.href || pathname.startsWith(`${l.href}/`);
             return (
               <Link key={l.label} href={l.href} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
                 {l.label}
@@ -214,7 +214,7 @@ export function MemberChrome({
           </svg>
           <span>Início</span>
         </Link>
-        <Link href="/academia#minha-jornada">
+        <Link href="/academia/jornada" className={pathname.startsWith("/academia/jornada") ? "is-active" : undefined}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 19V9m7 10V5m7 14v-7" />
           </svg>

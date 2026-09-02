@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 
 export function BuyPlanModal(props: {
   open: boolean;
@@ -121,9 +122,16 @@ export function BuyPlanModal(props: {
         {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
         <form onSubmit={onRegister} className="mt-4 space-y-3">
-          <input className="input" name="name" placeholder="Nome completo" required />
-          <input className="input" name="email" type="email" placeholder="E-mail" required />
-          <input className="input" name="phone" placeholder="Telefone" />
+          <input className="input" name="name" placeholder="Nome completo" required autoComplete="name" />
+          <input className="input" name="email" type="email" placeholder="E-mail" required autoComplete="email" />
+          <MaskedInput
+            className="input"
+            name="phone"
+            mask="phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+          />
           <input className="input" name="password" type="password" placeholder="Senha (mín. 6)" required minLength={6} />
           <label className="flex items-start gap-2 text-sm text-[#a8a8a8]">
             <input type="checkbox" name="lgpd" className="mt-1" required />
@@ -156,6 +164,7 @@ export function BuyPlanButton(props: {
   checkoutEnabled: boolean;
   whatsappUrl: string;
   label: string;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -196,9 +205,11 @@ export function BuyPlanButton(props: {
     setOpen(true);
   }
 
+  const buttonClass = ["button", "button-primary", props.className].filter(Boolean).join(" ");
+
   return (
     <>
-      <button type="button" className="button button-primary" onClick={onClick} disabled={loading}>
+      <button type="button" className={buttonClass} onClick={onClick} disabled={loading}>
         {loading ? "Redirecionando…" : props.label}
       </button>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
@@ -219,6 +230,7 @@ export function BuyModuleButton(props: {
   moduleName: string;
   checkoutEnabled: boolean;
   label?: string;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -256,9 +268,11 @@ export function BuyModuleButton(props: {
     setOpen(true);
   }
 
+  const buttonClass = ["button", "button-primary", props.className].filter(Boolean).join(" ");
+
   if (!props.checkoutEnabled) {
     return (
-      <Link href="/planos" className="button button-primary">
+      <Link href="/planos" className={buttonClass}>
         Ver planos
       </Link>
     );
@@ -268,7 +282,7 @@ export function BuyModuleButton(props: {
     <>
       <button
         type="button"
-        className="button button-primary"
+        className={buttonClass}
         onClick={onClick}
         disabled={loading}
       >

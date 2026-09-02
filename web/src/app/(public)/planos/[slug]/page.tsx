@@ -165,23 +165,30 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
         </div>
       </section>
 
-      {/* Steps */}
+      {/* Journey */}
       <section className="px-[clamp(20px,4vw,56px)] py-16">
-        <div className="mx-auto max-w-[900px]">
+        <div className="mx-auto max-w-[720px]">
           <h2 className="font-[family-name:var(--font-display)] text-[clamp(24px,3vw,32px)] font-bold leading-tight">
-            Como funciona
+            {copy.checkoutEnabled ? "Como é estudar neste plano" : "Como funciona para empresas"}
           </h2>
-          <ol className="mt-10 grid gap-8 md:grid-cols-3">
-            {copy.steps.map((s, i) => (
-              <li key={s.title}>
-                <p className="font-[family-name:var(--font-display)] text-3xl text-[#f7bd31]/50">
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-white">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#9a9a9a]">{s.text}</p>
+          {copy.checkoutEnabled ? (
+            <p className="mt-3 text-[#9a9a9a]">
+              Pagamento único, acesso na Academia e certificado por módulo concluído.
+            </p>
+          ) : null}
+          <ul className="mt-8 space-y-0 divide-y divide-white/10 border-y border-white/10">
+            {copy.steps.map((s) => (
+              <li key={s.title} className="flex gap-4 py-5">
+                <span className="mt-1 shrink-0 text-[#f7bd31]" aria-hidden>
+                  →
+                </span>
+                <div>
+                  <h3 className="font-semibold text-white">{s.title}</h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-[#9a9a9a]">{s.text}</p>
+                </div>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CourseCard } from "@/components/ui/CourseCard";
 import { CourseRail } from "@/components/ui/CourseRail";
+import type { AcademyRail } from "@/lib/academy-dashboard";
+import { AcademyEmptyState } from "@/components/member/AcademySections";
 
 export type AcademyModuleCard = {
   id: string;
@@ -13,12 +15,7 @@ export type AcademyModuleCard = {
   badge?: string | null;
 };
 
-export type AcademyRail = {
-  key: string;
-  title: string;
-  subtitle: string;
-  items: AcademyModuleCard[];
-};
+export type { AcademyRail };
 
 export function AcademyHome({
   name,
@@ -58,23 +55,7 @@ export function AcademyHome({
   };
 }) {
   if (!hero) {
-    return (
-      <main className="catalog" style={{ paddingTop: 120 }}>
-        <section className="rail-section">
-          <div className="panel text-[#aaaab2]">
-            Olá, {name}. Nenhum acesso ativo. Escolha um{" "}
-            <Link href="/planos" className="text-[var(--gold)]">
-              plano
-            </Link>{" "}
-            ou um{" "}
-            <Link href="/modulos" className="text-[var(--gold)]">
-              módulo avulso
-            </Link>
-            .
-          </div>
-        </section>
-      </main>
-    );
+    return <AcademyEmptyState name={name} />;
   }
 
   return (
@@ -123,7 +104,7 @@ export function AcademyHome({
             </div>
           </div>
         </div>
-        <a className="hero-scroll" href="#minha-jornada">
+        <a className="hero-scroll" href="/academia/jornada">
           Explorar minha jornada
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="m5 7 5 5 5-5" />
@@ -161,8 +142,8 @@ export function AcademyHome({
               <span>módulos liberados</span>
             </div>
           </div>
-          <Link className="summary-action" href="/academia/certificados">
-            Ver meu desempenho
+          <Link className="summary-action" href="/academia/jornada">
+            Ver minha jornada
             <svg viewBox="0 0 20 20" aria-hidden="true">
               <path d="m7 4 6 6-6 6" />
             </svg>

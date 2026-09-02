@@ -49,9 +49,18 @@ export const PLAN_SALES: Record<
       "Sair com certificado por módulo para currículo e LinkedIn",
     ],
     steps: [
-      { title: "Crie sua conta", text: "Nome, e-mail e senha. Use o mesmo e-mail do pagamento." },
-      { title: "Pague com segurança", text: "Pix, cartão ou boleto no checkout da Academia." },
-      { title: "Estude no seu ritmo", text: "Com o pagamento aprovado, os 6 módulos abrem na Academia." },
+      {
+        title: "Fundamento na ordem certa",
+        text: "Seis módulos do zero ao Warehouse Monitor — sem pular etapa nem encher linguiça.",
+      },
+      {
+        title: "Estude quando couber",
+        text: "Aulas gravadas na Academia. Pausa, retoma e revisa no ritmo do projeto.",
+      },
+      {
+        title: "Certificado por módulo",
+        text: "Concluiu → emite certificado. Evolui para o Pro quando precisar de operação.",
+      },
     ],
     faq: [
       {
@@ -100,9 +109,18 @@ export const PLAN_SALES: Record<
       "Provar o que fez: certificado por módulo concluído",
     ],
     steps: [
-      { title: "Cadastro rápido", text: "Crie a conta com o e-mail que vai usar no pagamento." },
-      { title: "Pagamento seguro", text: "Pix, cartão ou boleto no checkout da Academia." },
-      { title: "Acesso liberado", text: "Pagamento aprovado → 28 módulos abertos na Academia." },
+      {
+        title: "Operação de ponta a ponta",
+        text: "28 módulos: entrada, saída, inventário, packing, ondas, coletor e tarefas de armazém.",
+      },
+      {
+        title: "Conteúdo de projeto real",
+        text: "O que consultor e key user precisam explicar e executar no cliente — não teoria solta.",
+      },
+      {
+        title: "Certificado módulo a módulo",
+        text: "Cada módulo concluído gera certificado. Portfólio que comprova entrega no chão de armazém.",
+      },
     ],
     faq: [
       {
@@ -159,9 +177,18 @@ export const PLAN_SALES: Record<
       "Portfólio máximo de certificados da jornada",
     ],
     steps: [
-      { title: "Reserve o Expert", text: "Crie a conta com o e-mail do pagamento." },
-      { title: "Checkout único", text: "Pix, cartão ou boleto na própria Academia." },
-      { title: "Trilha inteira", text: "45 módulos na Academia, no seu ritmo, com certificado por módulo." },
+      {
+        title: "Trilha completa da jornada",
+        text: "45 módulos — fundação, operação e avançado — no mapa que separa especialista de generalista.",
+      },
+      {
+        title: "Integração e cenários difíceis",
+        text: "QM, produção, TM, automação e migração WM→EWM com profundidade para sustentar a mesa.",
+      },
+      {
+        title: "Referência com evidência",
+        text: "Certificado por módulo. O portfólio máximo para quando o projeto aperta.",
+      },
     ],
     faq: [
       {

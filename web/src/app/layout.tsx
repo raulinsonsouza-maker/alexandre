@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "Jornada SAP EWM Academy",
   description:
     "44 módulos e 11 trilhas de SAP Extended Warehouse Management — com Alexandre Santos Brunelli.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

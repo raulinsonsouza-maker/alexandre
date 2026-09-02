@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 
 const DESAFIOS = [
   ["Falta de key users preparados", "Dependência excessiva de consultorias externas"],
@@ -256,7 +257,15 @@ export default function EmpresasPage() {
           <form onSubmit={onSubmit} className="mt-8 space-y-4">
             <input className="input" name="nome" placeholder="Nome completo *" required />
             <input className="input" name="email" type="email" placeholder="E-mail corporativo *" required />
-            <input className="input" name="telefone" placeholder="Telefone / WhatsApp *" required />
+            <MaskedInput
+              className="input"
+              name="telefone"
+              mask="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              required
+            />
             <input className="input" name="empresa" placeholder="Empresa *" required />
             <input className="input" name="cargo" placeholder="Cargo" />
             <select className="input" name="qtd" defaultValue="">
