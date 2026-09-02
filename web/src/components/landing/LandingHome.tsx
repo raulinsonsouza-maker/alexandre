@@ -101,7 +101,6 @@ export function LandingHome({
   heroSubtitle?: string;
 }) {
   const categories = [...new Set(modules.map((m) => m.category || "Geral"))];
-  const lessonCount = modules.reduce((sum, m) => sum + m.lessonCount, 0);
   const banner = banners[0];
   const cover = banner?.imagePath || "/brand/hero-academy.jpg";
   const title = heroTitle || "Domine SAP EWM com a jornada completa";
@@ -130,25 +129,6 @@ export function LandingHome({
               Explorar módulos
             </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="landing-stats" aria-label="Números da jornada">
-        <div>
-          <strong>{modules.length || 45}</strong>
-          <span>módulos práticos</span>
-        </div>
-        <div>
-          <strong>{categories.length || 11}</strong>
-          <span>trilhas temáticas</span>
-        </div>
-        <div>
-          <strong>{lessonCount > 0 ? lessonCount : "400+"}</strong>
-          <span>aulas publicadas</span>
-        </div>
-        <div>
-          <strong>+15</strong>
-          <span>anos em SAP EWM</span>
         </div>
       </section>
 

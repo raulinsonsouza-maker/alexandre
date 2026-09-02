@@ -99,7 +99,7 @@ export default function ContatoPage() {
   return (
     <div className="bg-[#0a0a0c] text-white">
       {/* HERO */}
-      <section className="relative overflow-hidden px-[clamp(20px,4vw,56px)] pb-[clamp(48px,7vw,80px)] pt-[clamp(80px,12vh,120px)]">
+      <section className="relative overflow-hidden px-[clamp(20px,4vw,56px)] pb-[clamp(48px,7vw,80px)] pt-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(246,180,10,.14),transparent_55%),radial-gradient(ellipse_at_90%_20%,rgba(246,180,10,.06),transparent_50%)]" />
         <div className="relative mx-auto max-w-[1140px]">
           <span className="mb-5 inline-flex items-center gap-2 rounded border border-[#f7bd31]/50 bg-[#f7bd31]/15 px-3 py-1 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-[0.1em] text-[#f7bd31]">

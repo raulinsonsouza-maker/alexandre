@@ -53,3 +53,22 @@ export function moduleInPlan(planSlug: string, code: string) {
   if (planSlug === "expert" || planSlug === "corporate") return true;
   return false;
 }
+
+export type MinimumPlanSlug = "base" | "pro" | "expert";
+
+export const MINIMUM_PLAN_LABEL: Record<MinimumPlanSlug, string> = {
+  base: "Plano Base",
+  pro: "Plano Pro",
+  expert: "Plano Expert",
+};
+
+/** Menor plano cumulativo que inclui o módulo (Base → Pro → Expert). */
+export function minimumPlanSlugForModule(code: string): MinimumPlanSlug {
+  if ((BASE_MODULE_CODES as readonly string[]).includes(code)) return "base";
+  if ((PRO_MODULE_CODES as readonly string[]).includes(code)) return "pro";
+  return "expert";
+}
+
+export function minimumPlanLabelForModule(code: string): string {
+  return MINIMUM_PLAN_LABEL[minimumPlanSlugForModule(code)];
+}

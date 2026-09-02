@@ -103,7 +103,7 @@ export default async function ModuloPage({
               </Link>
             ) : isBonus ? (
               <Link href="/planos" className="button button-primary">
-                Incluído nos planos
+                Incluso nos planos
               </Link>
             ) : (
               <BuyModuleButton

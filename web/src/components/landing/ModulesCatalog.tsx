@@ -4,16 +4,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { LandingModule } from "@/components/landing/LandingHome";
 import { CAT_ORDER, TRACK_INTRO } from "@/data/catalog";
-import { BASE_MODULE_CODES, PRO_MODULE_CODES } from "@/data/plan-modules";
+import { minimumPlanLabelForModule, minimumPlanSlugForModule } from "@/data/plan-modules";
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function planEntry(code: string) {
-  if ((BASE_MODULE_CODES as readonly string[]).includes(code)) return "Base";
-  if ((PRO_MODULE_CODES as readonly string[]).includes(code)) return "Pro";
-  return "Expert";
 }
 
 function trackSlug(name: string) {
@@ -60,52 +54,55 @@ export function ModulesCatalog({ modules }: { modules: LandingModule[] }) {
   return (
     <div className="modules-catalog">
       <div className="catalog-toolbar">
-        <label className="catalog-search">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <path d="m16.5 16.5 4 4" />
-          </svg>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar módulo, código ou processo"
-            aria-label="Buscar módulos"
-          />
-        </label>
-        <div className="catalog-chips" role="tablist" aria-label="Trilhas do armazém">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={category === "Todos"}
-            className={category === "Todos" ? "is-active" : undefined}
-            onClick={() => setCategory("Todos")}
-          >
-            Todas
-          </button>
-          {tracks.map((name) => {
-            const count = modules.filter((m) => (m.category || "Geral") === name).length;
-            if (!count) return null;
-            return (
-              <button
-                key={name}
-                type="button"
-                role="tab"
-                aria-selected={category === name}
-                className={category === name ? "is-active" : undefined}
-                onClick={() => setCategory(name)}
-              >
-                {name}
-              </button>
-            );
-          })}
+        <div className="catalog-toolbar-row">
+          <label className="catalog-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m16.5 16.5 4 4" />
+            </svg>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar…"
+              aria-label="Buscar módulos por nome, código ou processo"
+            />
+          </label>
+
+          <label className="catalog-filter">
+            <span>Trilha</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              aria-label="Filtrar por trilha"
+            >
+              <option value="Todos">Todas as trilhas</option>
+              {tracks.map((name) => {
+                const count = modules.filter((m) => (m.category || "Geral") === name).length;
+                if (!count) return null;
+                return (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+
+          {(query.trim() || category !== "Todos") && (
+            <button
+              type="button"
+              className="catalog-clear"
+              onClick={() => {
+                setQuery("");
+                setCategory("Todos");
+              }}
+            >
+              Limpar
+            </button>
+          )}
         </div>
       </div>
-
-      <p className="catalog-count">
-        {filtered.length} {filtered.length === 1 ? "módulo" : "módulos"}
-        {category !== "Todos" ? ` em ${category}` : " na ordem da operação"}
-      </p>
 
       {groups.length === 0 ? (
         <p className="catalog-empty">Nenhum módulo encontrado. Tente outro termo ou trilha.</p>
@@ -122,13 +119,12 @@ export function ModulesCatalog({ modules }: { modules: LandingModule[] }) {
                 <h2 id={`heading-${trackSlug(group.name)}`}>{group.name}</h2>
                 <p>{group.intro}</p>
               </div>
-              <span>
-                {group.items.length} {group.items.length === 1 ? "módulo" : "módulos"}
-              </span>
             </header>
             <div className="catalog-rows">
               {group.items.map((item) => {
-                const plan = planEntry(item.code);
+                const isBonus = item.priceCents <= 0;
+                const planSlug = minimumPlanSlugForModule(item.code);
+                const planLabel = minimumPlanLabelForModule(item.code);
                 return (
                   <article key={item.id} className="catalog-row">
                     <Link href={`/modulos/${item.slug}`} className="catalog-row-media">
@@ -136,15 +132,24 @@ export function ModulesCatalog({ modules }: { modules: LandingModule[] }) {
                       <img
                         src={item.coverPath || "/brand/gold-badge.png"}
                         alt=""
-                        width={240}
-                        height={136}
+                        width={280}
+                        height={158}
                         loading="lazy"
                       />
                     </Link>
                     <div className="catalog-row-main">
                       <div className="catalog-row-tags">
                         <span className="catalog-code">{item.code}</span>
-                        <span className={`catalog-plan is-${plan.toLowerCase()}`}>A partir do {plan}</span>
+                        {isBonus ? (
+                          <span className="catalog-bonus">Bônus</span>
+                        ) : (
+                          <Link
+                            href={`/planos/${planSlug}`}
+                            className={`catalog-plan is-${planSlug}`}
+                          >
+                            {planLabel}
+                          </Link>
+                        )}
                         {item.featured ? <span className="catalog-featured">Destaque</span> : null}
                       </div>
                       <h3>
@@ -154,8 +159,9 @@ export function ModulesCatalog({ modules }: { modules: LandingModule[] }) {
                     </div>
                     <div className="catalog-row-buy">
                       <strong>{item.priceCents > 0 ? formatBRL(item.priceCents) : "Incluso nos planos"}</strong>
-                      <span>{item.lessonCount} aulas</span>
-                      <Link href={`/modulos/${item.slug}`}>Ver módulo</Link>
+                      <Link href={`/modulos/${item.slug}`} className="button button-primary catalog-row-cta">
+                        {isBonus ? "Ver módulo" : "Ver e comprar"}
+                      </Link>
                     </div>
                   </article>
                 );

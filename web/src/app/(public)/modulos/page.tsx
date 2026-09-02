@@ -44,18 +44,13 @@ export default async function ModulosPage() {
     lessonCount: m._count.lessons,
   }));
 
-  const trails = new Set(catalog.map((m) => m.category)).size;
-
   return (
     <div className="modules-page">
       <header className="catalog-head">
         <div>
           <span className="kicker">Vitrine</span>
           <h1>Catálogo de módulos</h1>
-          <p>
-            {catalog.length} módulos em {trails} trilhas, na ordem da operação: fundamentos, entrada, saída,
-            processos internos e avançado. Compre avulso ou siga um plano.
-          </p>
+          <p>Conteúdo prático de SAP EWM, do básico ao avançado. Compre avulso ou siga um plano.</p>
         </div>
         <Link className="button button-secondary" href="/planos">
           Ver planos
