@@ -30,16 +30,16 @@ export default async function SuportePage({
   const email = contact?.value || "contato@jornadaewm.com.br";
 
   return (
-    <div className="max-w-xl">
+    <div className="member-page max-w-xl">
       <h1 className="text-3xl font-semibold text-white">Suporte</h1>
       <p className="mt-2 text-[#A8A8AF]">
         Abra um chamado. Também pode escrever para{" "}
-        <a className="text-[#F1C96B]" href={`mailto:${email}`}>
+        <a className="text-[#f7bd31]" href={`mailto:${email}`}>
           {email}
         </a>
         .
       </p>
-      {sp.sent && <p className="mt-4 text-sm text-[#F1C96B]">Pedido registrado. Retornaremos em breve.</p>}
+      {sp.sent && <p className="mt-4 text-sm text-[#f7bd31]">Pedido registrado. Retornaremos em breve.</p>}
       {sp.error && <p className="mt-4 text-sm text-red-400">Preencha assunto e mensagem.</p>}
       <form action={sendSupport} className="mt-8 space-y-4">
         <input className="input" name="subject" placeholder="Assunto" required />

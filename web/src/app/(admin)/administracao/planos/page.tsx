@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { writeAudit } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
@@ -99,7 +99,7 @@ export default async function AdminPlanosPage() {
                 {p.published ? "Publicado" : "Rascunho"}
               </p>
               <h2 className="text-lg font-semibold text-white">{p.name}</h2>
-              <p className="text-sm text-[#F1C96B]">
+              <p className="text-sm text-[#f7bd31]">
                 {p.checkoutEnabled
                   ? `R$ ${(p.priceCents / 100).toFixed(2)}`
                   : p.ctaUrl || "Sob consulta"}

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,10 +34,10 @@ export function AdminNav() {
   }
 
   return (
-    <aside className="w-56 shrink-0 border-r border-[#2A2D32] bg-[#121014]">
-      <div className="border-b border-[#2A2D32] px-4 py-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#A8A8AF]">Administração</p>
-        <p className="mt-1 font-semibold text-[#F1C96B]">JORNADA SAP EWM</p>
+    <aside className="w-56 shrink-0 border-r border-[var(--line)] bg-[#101012]">
+      <div className="border-b border-[var(--line)] px-4 py-5">
+        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">Administração</p>
+        <p className="mt-1 font-semibold text-[var(--gold)]">JORNADA SAP EWM</p>
       </div>
       <nav className="flex flex-col gap-1 p-3">
         {adminLinks.map((l) => {
@@ -47,7 +47,7 @@ export function AdminNav() {
             <Link
               key={l.href}
               href={l.href}
-              className={`rounded-md px-3 py-2 text-sm ${active ? "bg-[rgba(241,201,107,.12)] text-[#F1C96B]" : "text-[#A8A8AF] hover:bg-white/5 hover:text-white"}`}
+              className={`rounded-md px-3 py-2 text-sm ${active ? "bg-[rgba(241,201,107,.12)] text-[#f7bd31]" : "text-[#A8A8AF] hover:bg-white/5 hover:text-white"}`}
             >
               {l.label}
             </Link>

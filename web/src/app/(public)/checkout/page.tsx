@@ -1,4 +1,4 @@
-﻿import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createCheckout } from "@/lib/payment";
 import { userAlreadyHasModuleAccess, userAlreadyHasPlanAccess } from "@/lib/access";
@@ -78,7 +78,7 @@ export default async function CheckoutPage({
         <div className="mx-auto max-w-lg px-4 py-16">
           <h1 className="text-3xl font-semibold text-white">Checkout</h1>
           <p className="mt-4 text-[#A8A8AF]">Plano não encontrado.</p>
-          <Link href="/planos" className="mt-4 inline-block text-[#F1C96B]">
+          <Link href="/planos" className="mt-4 inline-block text-[#f7bd31]">
             Ver planos
           </Link>
         </div>
@@ -115,7 +115,7 @@ export default async function CheckoutPage({
         <div className="mx-auto max-w-lg px-4 py-16">
           <h1 className="text-3xl font-semibold text-white">Checkout</h1>
           <p className="mt-4 text-[#A8A8AF]">Módulo não encontrado.</p>
-          <Link href="/#modulos" className="mt-4 inline-block text-[#F1C96B]">
+          <Link href="/modulos" className="mt-4 inline-block text-[#f7bd31]">
             Ver vitrine
           </Link>
         </div>
@@ -147,7 +147,7 @@ export default async function CheckoutPage({
           <Link href="/planos" className="btn">
             Ver planos
           </Link>
-          <Link href="/#modulos" className="btn-ghost">
+          <Link href="/modulos" className="btn-ghost">
             Ver módulos
           </Link>
         </div>
@@ -219,14 +219,14 @@ export default async function CheckoutPage({
         <p className="text-xs uppercase tracking-wide text-[#A8A8AF]">
           {kind === "plan" ? "Pacote" : "Módulo avulso"}
         </p>
-        <h2 className="mt-1 text-lg font-semibold text-[#F1C96B]">{title}</h2>
+        <h2 className="mt-1 text-lg font-semibold text-[#f7bd31]">{title}</h2>
         <p className="mt-2 text-2xl text-white">{formatBRL(priceCents)}</p>
         <p className="mt-2 text-sm text-[#A8A8AF]">{providerLabel()}</p>
       </div>
 
       {blockedReason ? (
         <div className="mt-6 space-y-3">
-          <p className="text-sm text-[#F1C96B]">{blockedReason}</p>
+          <p className="text-sm text-[#f7bd31]">{blockedReason}</p>
           <Link href="/academia" className="btn inline-flex">
             Ir à Academia
           </Link>
@@ -240,14 +240,14 @@ export default async function CheckoutPage({
           Faça{" "}
           <Link
             href={`/conta/entrar?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`}
-            className="text-[#F1C96B]"
+            className="text-[#f7bd31]"
           >
             login
           </Link>{" "}
           ou{" "}
           <Link
             href={`/conta/cadastro?callbackUrl=${encodeURIComponent(`/checkout?${checkoutQs}`)}`}
-            className="text-[#F1C96B]"
+            className="text-[#f7bd31]"
           >
             cadastre-se
           </Link>{" "}

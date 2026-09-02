@@ -150,7 +150,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
 
   return (
     <div>
-      <Link href="/administracao/conteudo" className="text-sm text-[#A8A8AF] hover:text-[#F1C96B]">
+      <Link href="/administracao/conteudo" className="text-sm text-[#A8A8AF] hover:text-[#f7bd31]">
         ← Conteúdo
       </Link>
       <h1 className="mt-2 text-3xl font-semibold text-white">
@@ -225,7 +225,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
       <h2 className="mt-10 text-xl font-semibold text-white">Aulas ({mod.lessons.length})</h2>
 
       <form action={createLesson} className="panel mt-4 space-y-3">
-        <h3 className="font-semibold text-[#F1C96B]">Nova aula</h3>
+        <h3 className="font-semibold text-[#f7bd31]">Nova aula</h3>
         <input type="hidden" name="moduleId" value={mod.id} />
         <input className="input" name="title" placeholder="Título da aula" required />
         <textarea className="input min-h-20" name="description" placeholder="Descrição" />

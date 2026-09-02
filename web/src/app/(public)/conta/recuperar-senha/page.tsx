@@ -73,7 +73,7 @@ export default async function RecuperarSenhaPage({
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-3xl font-semibold text-white">Recuperar senha</h1>
-      {sp.sent && <p className="mt-4 text-sm text-[#F1C96B]">Se o e-mail existir, enviamos o link (veja o log do servidor em modo demo).</p>}
+      {sp.sent && <p className="mt-4 text-sm text-[#f7bd31]">Se o e-mail existir, enviamos o link (veja o log do servidor em modo demo).</p>}
       <form action={requestReset} className="mt-8 space-y-4">
         <input className="input" name="email" type="email" placeholder="Seu e-mail" required />
         <button className="btn w-full" type="submit">

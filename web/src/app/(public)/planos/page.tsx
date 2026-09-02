@@ -8,14 +8,24 @@ function formatBRL(cents: number) {
 export default async function PlanosPage() {
   const plans = await prisma.plan.findMany({
     where: { published: true },
-    include: { _count: { select: { modules: true } } },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      goal: true,
+      priceCents: true,
+      badge: true,
+      bullets: true,
+      checkoutEnabled: true,
+      _count: { select: { modules: true } },
+    },
     orderBy: { sortOrder: "asc" },
   });
 
   return (
-    <div className="bg-[#0a0a0c] px-[clamp(20px,4vw,56px)] py-16 text-white">
+    <div className="bg-[var(--background)] px-[clamp(20px,4vw,56px)] py-16 text-white">
       <div className="mx-auto max-w-[1140px]">
-        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f7bd31]">
           Planos
         </span>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-[clamp(32px,4vw,52px)] font-bold uppercase">
@@ -35,25 +45,25 @@ export default async function PlanosPage() {
                 key={p.id}
                 className={`relative flex flex-col rounded-xl border p-6 ${
                   p.badge?.toLowerCase().includes("recomend")
-                    ? "border-[#f6b40a]/50 bg-gradient-to-b from-[#1c1706] to-[#141416]"
+                    ? "border-[#f7bd31]/50 bg-gradient-to-b from-[#1c1706] to-[#141416]"
                     : "border-white/10 bg-[#141416]"
                 }`}
               >
                 {p.badge && (
-                  <span className="absolute -top-2.5 right-4 rounded bg-[#f6b40a] px-2 py-0.5 text-[10px] font-bold uppercase text-[#0a0a0c]">
+                  <span className="absolute -top-2.5 right-4 rounded bg-[#f7bd31] px-2 py-0.5 text-[10px] font-bold uppercase text-[#0a0a0c]">
                     {p.badge}
                   </span>
                 )}
                 <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold">{p.name}</h2>
                 {p.goal && <p className="mt-2 text-sm text-[#a8a8a8]">{p.goal}</p>}
-                <p className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[#f6b40a]">
+                <p className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[#f7bd31]">
                   {p.checkoutEnabled ? formatBRL(p.priceCents) : "Sob consulta"}
                 </p>
                 <p className="mt-1 text-xs text-[#888]">{p._count.modules} módulos incluídos</p>
                 <ul className="mt-5 flex-1 space-y-2 text-sm text-[#cfcfcf]">
                   {bullets.map((b) => (
                     <li key={b}>
-                      <span className="mr-2 text-[#f6b40a]">✓</span>
+                      <span className="mr-2 text-[#f7bd31]">✓</span>
                       {b}
                     </li>
                   ))}
@@ -62,8 +72,8 @@ export default async function PlanosPage() {
                   href={href}
                   className={`mt-6 inline-flex justify-center rounded px-4 py-3 text-center text-sm font-bold ${
                     p.checkoutEnabled
-                      ? "bg-[#f6b40a] text-[#0a0a0c]"
-                      : "border border-dashed border-[#f6b40a]/50 text-[#f6b40a]"
+                      ? "bg-[#f7bd31] text-[#0a0a0c]"
+                      : "border border-dashed border-[#f7bd31]/50 text-[#f7bd31]"
                   }`}
                 >
                   {p.checkoutEnabled ? `Ver ${p.name}` : "Ver Corporate"}
@@ -75,7 +85,7 @@ export default async function PlanosPage() {
 
         <div className="mt-12 rounded-xl border border-white/10 bg-[#141416] p-6 text-center">
           <p className="text-[#a8a8a8]">Prefere só um tema específico?</p>
-          <Link href="/#modulos" className="mt-3 inline-block font-bold text-[#f6b40a]">
+          <Link href="/modulos" className="mt-3 inline-block font-bold text-[#f7bd31]">
             Ver módulos avulsos na vitrine →
           </Link>
         </div>

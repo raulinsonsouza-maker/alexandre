@@ -1,4 +1,4 @@
-﻿import { requireSession } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
@@ -54,7 +54,7 @@ export default async function PerfilPage({
   const user = await prisma.user.findUniqueOrThrow({ where: { id: session.user.id } });
 
   return (
-    <div className="max-w-xl space-y-10">
+    <div className="member-page max-w-xl space-y-10">
       <div>
         <h1 className="text-3xl font-semibold text-white">Meu perfil</h1>
         <form action={updateProfile} className="mt-8 space-y-4">
@@ -75,7 +75,7 @@ export default async function PerfilPage({
 
       <div>
         <h2 className="text-xl font-semibold text-white">Trocar senha</h2>
-        {sp.pwd === "ok" && <p className="mt-2 text-sm text-[#F1C96B]">Senha atualizada.</p>}
+        {sp.pwd === "ok" && <p className="mt-2 text-sm text-[#f7bd31]">Senha atualizada.</p>}
         {sp.pwd === "wrong" && <p className="mt-2 text-sm text-red-400">Senha atual incorreta.</p>}
         {sp.pwd === "invalid" && (
           <p className="mt-2 text-sm text-red-400">Nova senha inválida ou não coincide (mín. 6).</p>

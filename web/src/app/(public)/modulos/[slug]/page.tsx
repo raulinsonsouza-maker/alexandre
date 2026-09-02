@@ -5,7 +5,9 @@ import { auth } from "@/lib/auth";
 import { userAlreadyHasModuleAccess } from "@/lib/access";
 import { ModuleLessons } from "@/components/landing/ModuleLessons";
 import { BuyModuleButton } from "@/components/checkout/BuyPlanModal";
-import { moduleCoverUrl } from "@/lib/media";
+import { academyCover } from "@/lib/academy-cover";
+import { CourseCard } from "@/components/ui/CourseCard";
+import { CourseRail } from "@/components/ui/CourseRail";
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -21,7 +23,17 @@ export default async function ModuloPage({
 
   const dbModule = await prisma.module.findUnique({
     where: { slug },
-    include: {
+    select: {
+      id: true,
+      code: true,
+      slug: true,
+      title: true,
+      description: true,
+      category: true,
+      published: true,
+      priceCents: true,
+      coverPath: true,
+      caktoOfferId: true,
       lessons: {
         where: { published: true },
         orderBy: { sortOrder: "asc" },
@@ -47,6 +59,7 @@ export default async function ModuloPage({
     },
     take: 8,
     orderBy: { sortOrder: "asc" },
+    select: { slug: true, title: true, code: true, coverPath: true, category: true },
   });
 
   const lessons = dbModule.lessons.map((l, i) => ({
@@ -55,7 +68,7 @@ export default async function ModuloPage({
     description: l.description || l.contentKey || "Conteúdo disponível na área de membros.",
   }));
 
-  const cover = dbModule.coverPath || moduleCoverUrl(dbModule.code) || "/brand/gold-badge.png";
+  const cover = academyCover(dbModule.code, dbModule.coverPath);
   const price = dbModule.priceCents;
   const hasAccess =
     session?.user ? await userAlreadyHasModuleAccess(session.user.id, dbModule.id) : false;
@@ -65,46 +78,31 @@ export default async function ModuloPage({
   const isBonus = price <= 0;
 
   return (
-    <div className="bg-[#0a0a0c] text-white">
-      <section className="relative flex min-h-[92vh] items-end overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-right" style={{ backgroundImage: `url('${cover}')` }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#08080a]/96 via-[#08080a]/80 to-[#08080a]/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/40 to-transparent" />
-
-        <div className="relative z-[3] max-w-[720px] px-[clamp(20px,4vw,56px)] pb-[clamp(48px,7vh,92px)] pt-24">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <span className="rounded border border-[#f6b40a]/50 bg-[#f6b40a]/15 px-3 py-1 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-wide text-[#f6b40a]">
-              {dbModule.code}
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#cfcfcf]">
-              {dbModule.category || "Módulo"}
-            </span>
+    <div className="bg-[var(--background)] text-white">
+      <section className="hero hero-module" aria-labelledby="module-title">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="hero-media" src={cover} alt="" width={1024} height={576} />
+        <div className="hero-scrim" aria-hidden="true" />
+        <div className="hero-content">
+          <div className="eyebrow">
+            <span>{dbModule.code}</span>
+            <i /> {dbModule.category || "Módulo"}
           </div>
-          <h1 className="mb-4 font-[family-name:var(--font-display)] text-[clamp(36px,5.2vw,72px)] font-bold uppercase leading-[0.95]">
-            {dbModule.title}
-          </h1>
-          <p className="mb-3 max-w-[600px] text-[clamp(16px,1.5vw,20px)] leading-relaxed text-[#dcdcdc]">
-            {dbModule.description}
-          </p>
-          <div className="mb-6 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wide text-[#9a9a9a]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#f6b40a]" />
-            {isBonus
-              ? `Bônus · ${lessons.length} aulas`
-              : `Módulo avulso · ${lessons.length} aulas · ${formatBRL(price)}`}
+          <h1 id="module-title">{dbModule.title}</h1>
+          <p>{dbModule.description}</p>
+          <div className="hero-meta">
+            <span>{isBonus ? "Bônus" : "Módulo avulso"}</span>
+            <span>{lessons.length} aulas</span>
+            {!isBonus ? <span>{formatBRL(price)}</span> : <span>Incluso nos planos</span>}
+            <span>Português</span>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="hero-actions">
             {hasAccess ? (
-              <Link
-                href="/academia"
-                className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
-              >
+              <Link href="/academia" className="button button-primary">
                 Ir à Academia
               </Link>
             ) : isBonus ? (
-              <Link
-                href="/planos"
-                className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
-              >
+              <Link href="/planos" className="button button-primary">
                 Incluído nos planos
               </Link>
             ) : (
@@ -116,104 +114,72 @@ export default async function ModuloPage({
                 label={canBuyAvulso ? "Comprar módulo" : "Ver planos"}
               />
             )}
-            <Link
-              href="/planos"
-              className="inline-flex items-center gap-2 rounded border border-white/25 bg-white/10 px-6 py-3.5 text-base font-semibold text-white"
-            >
+            <Link href="/planos" className="button button-secondary">
               Ver planos
             </Link>
           </div>
           {!hasAccess && !isBonus && !canBuyAvulso && (
-            <p className="mt-3 text-sm text-[#a8a8a8]">
-              Compra avulsa em preparação. Enquanto isso, veja os planos da jornada.
-            </p>
+            <p>Compra avulsa em preparação. Enquanto isso, veja os planos da jornada.</p>
           )}
         </div>
       </section>
 
-      <main className="relative z-[5] -mt-8">
-        <section className="mx-auto max-w-[980px] px-[clamp(20px,4vw,56px)] pt-[clamp(40px,6vw,72px)]">
-          <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
-            Sobre o módulo
-          </span>
+      <main className="module-page-body">
+        <section className="module-page-section">
+          <span className="kicker">Sobre o módulo</span>
           <p className="mt-4 text-[17.5px] leading-relaxed text-[#cecece]">{dbModule.description}</p>
         </section>
 
-        <section className="mx-auto max-w-[980px] px-[clamp(20px,4vw,56px)] pt-[clamp(48px,7vw,88px)]">
+        <section className="module-page-section">
           <div className="mb-6 flex flex-wrap items-baseline gap-3">
             <h2 className="font-[family-name:var(--font-display)] text-[clamp(26px,3.4vw,42px)] font-bold uppercase">
-              Conteúdo do <span className="text-[#f6b40a]">módulo</span>
+              Conteúdo do <span className="text-[var(--gold)]">módulo</span>
             </h2>
             <span className="text-sm font-semibold text-[#9a9a9a]">{lessons.length} aulas</span>
           </div>
           <ModuleLessons lessons={lessons} />
         </section>
 
-        <section className="mx-auto max-w-[980px] px-[clamp(20px,4vw,56px)] py-[clamp(48px,7vw,88px)]">
-          <div className="rounded-xl border border-[#f6b40a]/30 bg-gradient-to-br from-[#1c1706] to-[#141416] p-8">
-            <h2 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase">
-              {isBonus ? "Módulo bônus" : "Invista neste módulo"}
-            </h2>
-            <div className="mt-4">
-              <span className="font-[family-name:var(--font-display)] text-[clamp(36px,4.4vw,52px)] text-[#f6b40a]">
-                {isBonus ? "Incluso" : formatBRL(price)}
-              </span>
-              {!isBonus && (
-                <p className="mt-2 text-sm text-[#a8a8a8]">Pagamento seguro · Pix, cartão ou boleto</p>
-              )}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {hasAccess ? (
-                <Link href="/academia" className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
-                  Ir à Academia
-                </Link>
-              ) : isBonus ? (
-                <Link href="/planos" className="rounded bg-[#f6b40a] px-7 py-3 font-bold text-[#0a0a0c]">
-                  Ver planos
-                </Link>
-              ) : (
-                <BuyModuleButton
-                  loggedIn={Boolean(session?.user)}
-                  moduleSlug={dbModule.slug}
-                  moduleName={dbModule.title}
-                  checkoutEnabled={canBuyAvulso}
-                  label={canBuyAvulso ? "Comprar agora" : "Ver planos"}
-                />
-              )}
-              <Link href="/planos" className="rounded border border-white/20 px-7 py-3 font-semibold text-white">
-                Ver planos
-              </Link>
-            </div>
+        <section className="certificate-banner">
+          <div>
+            <span className="kicker">{isBonus ? "Módulo bônus" : "Invista neste módulo"}</span>
+            <h2>{isBonus ? "Incluso nos planos da jornada" : formatBRL(price)}</h2>
+            <p>{isBonus ? "Este conteúdo entra junto com os pacotes." : "Pagamento seguro · Pix, cartão ou boleto"}</p>
           </div>
+          {hasAccess ? (
+            <Link href="/academia" className="button button-primary">
+              Ir à Academia
+            </Link>
+          ) : isBonus ? (
+            <Link href="/planos" className="button button-primary">
+              Ver planos
+            </Link>
+          ) : (
+            <BuyModuleButton
+              loggedIn={Boolean(session?.user)}
+              moduleSlug={dbModule.slug}
+              moduleName={dbModule.title}
+              checkoutEnabled={canBuyAvulso}
+              label={canBuyAvulso ? "Comprar agora" : "Ver planos"}
+            />
+          )}
         </section>
 
         {related.length > 0 && (
-          <section className="border-t border-white/10 px-[clamp(20px,4vw,56px)] py-12">
-            <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold uppercase">
-              Mais em <span className="text-[#f6b40a]">{dbModule.category}</span>
-            </h2>
-            <div className="flex gap-3.5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="catalog">
+            <CourseRail title={`Mais em ${dbModule.category}`} subtitle="Continue explorando a trilha">
               {related.map((r) => (
-                <Link
+                <CourseCard
                   key={r.slug}
                   href={`/modulos/${r.slug}`}
-                  className="relative aspect-video w-[min(300px,70vw)] shrink-0 overflow-hidden rounded-md border border-white/[0.07] bg-[#161616] transition hover:border-[#f6b40a]"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={r.coverPath || moduleCoverUrl(r.code) || "/brand/gold-badge.png"}
-                    alt={r.title}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3">
-                    <div className="font-[family-name:var(--font-display)] text-sm font-bold uppercase text-white">
-                      {r.title}
-                    </div>
-                  </div>
-                </Link>
+                  title={r.title}
+                  image={academyCover(r.code, r.coverPath)}
+                  label={r.category || "Módulo"}
+                  details={[r.code]}
+                />
               ))}
-            </div>
-          </section>
+            </CourseRail>
+          </div>
         )}
       </main>
     </div>

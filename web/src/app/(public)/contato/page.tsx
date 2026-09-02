@@ -102,12 +102,12 @@ export default function ContatoPage() {
       <section className="relative overflow-hidden px-[clamp(20px,4vw,56px)] pb-[clamp(48px,7vw,80px)] pt-[clamp(80px,12vh,120px)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(246,180,10,.14),transparent_55%),radial-gradient(ellipse_at_90%_20%,rgba(246,180,10,.06),transparent_50%)]" />
         <div className="relative mx-auto max-w-[1140px]">
-          <span className="mb-5 inline-flex items-center gap-2 rounded border border-[#f6b40a]/50 bg-[#f6b40a]/15 px-3 py-1 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-[0.1em] text-[#f6b40a]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#f6b40a] shadow-[0_0_10px_#f6b40a]" />
+          <span className="mb-5 inline-flex items-center gap-2 rounded border border-[#f7bd31]/50 bg-[#f7bd31]/15 px-3 py-1 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-[0.1em] text-[#f7bd31]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#f7bd31] shadow-[0_0_10px_#f7bd31]" />
             Best One IT Treinamentos
           </span>
           <h1 className="mb-5 font-[family-name:var(--font-display)] text-[clamp(40px,6vw,88px)] font-bold uppercase leading-[0.94]">
-            Fale com a <span className="text-[#f6b40a]">Best One IT</span>
+            Fale com a <span className="text-[#f7bd31]">Best One IT</span>
           </h1>
           <p className="mb-3.5 max-w-[760px] text-[clamp(16px,1.6vw,21px)] leading-relaxed text-[#dcdcdc]">
             Entre em contato para treinamentos SAP EWM, mentorias técnicas, consultoria especializada, projetos de
@@ -117,7 +117,7 @@ export default function ContatoPage() {
             Especialistas em SAP EWM, logística, armazéns, transporte, manufatura e supply chain.
           </p>
           <div className="flex flex-wrap gap-3.5">
-            <a href="#form" className="rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]">
+            <a href="#form" className="rounded bg-[#f7bd31] px-8 py-3.5 text-base font-bold text-[#0a0a0c]">
               Enviar Mensagem
             </a>
             <a
@@ -138,14 +138,14 @@ export default function ContatoPage() {
           <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#141417] to-[#0f0f12] p-[clamp(24px,3.4vw,40px)] shadow-[0_24px_70px_rgba(0,0,0,.45)]">
             {sent ? (
               <div className="px-3 py-12 text-center">
-                <div className="mx-auto mb-5 flex h-[74px] w-[74px] items-center justify-center rounded-full border border-[#f6b40a]/50 bg-[#f6b40a]/15 text-4xl text-[#f6b40a]">
+                <div className="mx-auto mb-5 flex h-[74px] w-[74px] items-center justify-center rounded-full border border-[#f7bd31]/50 bg-[#f7bd31]/15 text-4xl text-[#f7bd31]">
                   ✓
                 </div>
                 <h2 className="mb-3 font-[family-name:var(--font-display)] text-[clamp(24px,3vw,34px)] font-bold uppercase">
                   Obrigado pelo contato
                 </h2>
                 <p className="mx-auto mb-6 max-w-md text-[16.5px] leading-relaxed text-[#cfcfcf]">
-                  Sua mensagem foi preparada para envio a <span className="text-[#f6b40a]">{EMAIL}</span>. Confirme o
+                  Sua mensagem foi preparada para envio a <span className="text-[#f7bd31]">{EMAIL}</span>. Confirme o
                   envio no seu aplicativo de e-mail — em breve retornaremos com uma análise inicial.
                 </p>
                 <button
@@ -159,51 +159,51 @@ export default function ContatoPage() {
             ) : (
               <>
                 <h2 className="mb-1.5 font-[family-name:var(--font-display)] text-[clamp(22px,2.8vw,32px)] font-bold uppercase">
-                  Formulário de <span className="text-[#f6b40a]">contato</span>
+                  Formulário de <span className="text-[#f7bd31]">contato</span>
                 </h2>
                 <p className="mb-6 text-[14.5px] text-[#9a9a9a]">
-                  Preencha os campos abaixo. Os marcados com <span className="text-[#f6b40a]">*</span> são obrigatórios.
+                  Preencha os campos abaixo. Os marcados com <span className="text-[#f7bd31]">*</span> são obrigatórios.
                 </p>
                 <form onSubmit={onSubmit} noValidate className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <label className="flex flex-col gap-1.5 md:col-span-2">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        Nome completo <span className="text-[#f6b40a]">*</span>
+                        Nome completo <span className="text-[#f7bd31]">*</span>
                       </span>
                       <input className="input" name="nome" placeholder="Seu nome completo" />
                       {errors.nome && <span className="text-[12.5px] text-[#ff6b5e]">{errors.nome}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        E-mail profissional <span className="text-[#f6b40a]">*</span>
+                        E-mail profissional <span className="text-[#f7bd31]">*</span>
                       </span>
                       <input className="input" name="email" type="email" placeholder="nome@empresa.com" />
                       {errors.email && <span className="text-[12.5px] text-[#ff6b5e]">{errors.email}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        Telefone / WhatsApp <span className="text-[#f6b40a]">*</span>
+                        Telefone / WhatsApp <span className="text-[#f7bd31]">*</span>
                       </span>
                       <input className="input" name="telefone" type="tel" placeholder="(11) 9 9999-9999" />
                       {errors.telefone && <span className="text-[12.5px] text-[#ff6b5e]">{errors.telefone}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        Empresa <span className="text-[#f6b40a]">*</span>
+                        Empresa <span className="text-[#f7bd31]">*</span>
                       </span>
                       <input className="input" name="empresa" placeholder="Nome da empresa" />
                       {errors.empresa && <span className="text-[12.5px] text-[#ff6b5e]">{errors.empresa}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        Cargo <span className="text-[#f6b40a]">*</span>
+                        Cargo <span className="text-[#f7bd31]">*</span>
                       </span>
                       <input className="input" name="cargo" placeholder="Seu cargo / função" />
                       {errors.cargo && <span className="text-[12.5px] text-[#ff6b5e]">{errors.cargo}</span>}
                     </label>
                     <label className="flex flex-col gap-1.5 md:col-span-2">
                       <span className="text-[13px] font-semibold text-[#c8c8c8]">
-                        Tipo de interesse <span className="text-[#f6b40a]">*</span>
+                        Tipo de interesse <span className="text-[#f7bd31]">*</span>
                       </span>
                       <select className="input" name="interesse" defaultValue="">
                         <option value="">Selecione uma opção…</option>
@@ -225,7 +225,7 @@ export default function ContatoPage() {
                       />
                     </label>
                   </div>
-                  <button type="submit" className="mt-2 w-full rounded-lg bg-[#f6b40a] py-4 text-[16.5px] font-bold uppercase tracking-wide text-[#0a0a0c]">
+                  <button type="submit" className="mt-2 w-full rounded-lg bg-[#f7bd31] py-4 text-[16.5px] font-bold uppercase tracking-wide text-[#0a0a0c]">
                     Enviar Solicitação
                   </button>
                   <p className="text-[12.5px] leading-relaxed text-[#7e7e84]">
@@ -273,11 +273,11 @@ export default function ContatoPage() {
                   ["Resposta", "Análise inicial em até 1 dia útil"],
                 ].map(([label, value]) => (
                   <div key={label} className="flex gap-3">
-                    <span className="mt-0.5 text-[17px] text-[#f6b40a]">▹</span>
+                    <span className="mt-0.5 text-[17px] text-[#f7bd31]">▹</span>
                     <div>
                       <div className="mb-0.5 text-xs uppercase tracking-wide text-[#8a8a8a]">{label}</div>
                       {label === "E-mail" ? (
-                        <a href={`mailto:${EMAIL}`} className="text-[15px] font-semibold text-[#f6b40a]">
+                        <a href={`mailto:${EMAIL}`} className="text-[15px] font-semibold text-[#f7bd31]">
                           {value}
                         </a>
                       ) : (
@@ -295,19 +295,19 @@ export default function ContatoPage() {
       {/* CONFIANÇA */}
       <section className="border-t border-white/10 bg-gradient-to-b from-[#0e0e11] to-[#0a0a0c] px-[clamp(20px,4vw,56px)] py-[clamp(48px,7vw,96px)]">
         <div className="mx-auto max-w-[1140px]">
-          <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+          <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f7bd31]">
             Por que falar com a gente
           </span>
           <h2 className="mb-8 mt-3 font-[family-name:var(--font-display)] text-[clamp(28px,3.7vw,50px)] font-bold uppercase leading-none">
-            Autoridade técnica em <span className="text-[#f6b40a]">SAP EWM</span>
+            Autoridade técnica em <span className="text-[#f7bd31]">SAP EWM</span>
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TRUST.map((t) => (
               <div
                 key={t.title}
-                className="rounded-[14px] border border-white/10 bg-gradient-to-b from-[#161618] to-[#111113] p-6 transition hover:-translate-y-1 hover:border-[#f6b40a]/45"
+                className="rounded-[14px] border border-white/10 bg-gradient-to-b from-[#161618] to-[#111113] p-6 transition hover:-translate-y-1 hover:border-[#f7bd31]/45"
               >
-                <div className="mb-4 flex h-[46px] w-[46px] items-center justify-center rounded-[11px] bg-[#f6b40a]/14 text-[22px] text-[#f6b40a]">
+                <div className="mb-4 flex h-[46px] w-[46px] items-center justify-center rounded-[11px] bg-[#f7bd31]/14 text-[22px] text-[#f7bd31]">
                   {t.icon}
                 </div>
                 <h3 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold leading-tight text-white">

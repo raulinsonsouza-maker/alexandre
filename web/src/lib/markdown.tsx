@@ -30,7 +30,7 @@ export function renderMarkdown(body: string) {
     }
     if (t.startsWith("> ")) {
       return (
-        <blockquote key={i} className="mt-4 border-l-2 border-[#F1C96B]/40 pl-4 text-[#bdbdbd] italic">
+        <blockquote key={i} className="mt-4 border-l-2 border-[#f7bd31]/40 pl-4 text-[#bdbdbd] italic">
           {inline(t.replace(/^>\s?/gm, ""))}
         </blockquote>
       );
@@ -79,13 +79,13 @@ function inline(text: string) {
       );
     } else if (m[3]) {
       parts.push(
-        <code key={key++} className="rounded bg-white/10 px-1 py-0.5 text-[0.9em] text-[#F1C96B]">
+        <code key={key++} className="rounded bg-white/10 px-1 py-0.5 text-[0.9em] text-[#f7bd31]">
           {m[3]}
         </code>,
       );
     } else if (m[4] && m[5]) {
       parts.push(
-        <a key={key++} href={m[5]} className="text-[#F1C96B] underline-offset-2 hover:underline">
+        <a key={key++} href={m[5]} className="text-[#f7bd31] underline-offset-2 hover:underline">
           {m[4]}
         </a>,
       );

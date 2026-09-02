@@ -53,8 +53,8 @@ export default function SobrePage() {
       <section className="mx-auto max-w-[1140px] px-[clamp(20px,4vw,56px)] py-[clamp(56px,8vw,100px)]">
         <div className="grid items-center gap-10 md:grid-cols-[minmax(260px,360px)_1fr]">
           <div className="relative">
-            <div className="absolute -right-2.5 -top-2.5 z-0 h-[64%] w-[64%] rounded-xl border-2 border-[#f6b40a]/40" />
-            <div className="relative z-[1] aspect-[4/5] overflow-hidden rounded-xl border border-[#f6b40a]/30 shadow-[0_24px_60px_rgba(0,0,0,.55)]">
+            <div className="absolute -right-2.5 -top-2.5 z-0 h-[64%] w-[64%] rounded-xl border-2 border-[#f7bd31]/40" />
+            <div className="relative z-[1] aspect-[4/5] overflow-hidden rounded-xl border border-[#f7bd31]/30 shadow-[0_24px_60px_rgba(0,0,0,.55)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/brand/alexandre.jpeg"
@@ -63,22 +63,22 @@ export default function SobrePage() {
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#08080a] to-transparent px-4 pb-4 pt-8">
                 <div className="font-[family-name:var(--font-display)] text-xl font-bold">Alexandre S. Brunelli</div>
-                <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#f6b40a]">
+                <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#f7bd31]">
                   Especialista & Mentor SAP EWM
                 </div>
               </div>
-              <div className="absolute left-3.5 top-3.5 rounded bg-[#f6b40a] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0a0a0c]">
+              <div className="absolute left-3.5 top-3.5 rounded bg-[#f7bd31] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0a0a0c]">
                 Mentor da Jornada
               </div>
             </div>
           </div>
 
           <div>
-            <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+            <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f7bd31]">
               Quem conduz a sua jornada
             </span>
             <h1 className="mt-3 mb-4 font-[family-name:var(--font-display)] text-[clamp(28px,3.5vw,44px)] font-bold uppercase leading-tight">
-              Aprenda SAP EWM com quem atua em <span className="text-[#f6b40a]">projetos reais</span> de alta
+              Aprenda SAP EWM com quem atua em <span className="text-[#f7bd31]">projetos reais</span> de alta
               criticidade
             </h1>
             <p className="mb-5 text-[16px] leading-relaxed text-[#c8c8c8]">
@@ -93,7 +93,7 @@ export default function SobrePage() {
                 ["+15", "anos em SAP EWM"],
               ].map(([n, l]) => (
                 <div key={l} className="rounded-lg border border-white/10 bg-[#141416] p-3">
-                  <div className="font-[family-name:var(--font-display)] text-2xl text-[#f6b40a]">{n}</div>
+                  <div className="font-[family-name:var(--font-display)] text-2xl text-[#f7bd31]">{n}</div>
                   <div className="mt-1 text-[11px] text-[#aaa]">{l}</div>
                 </div>
               ))}
@@ -131,7 +131,7 @@ export default function SobrePage() {
         <div className="grid gap-3 md:grid-cols-2">
           {DOMINIOS.map(([t, d]) => (
             <div key={t} className="rounded-lg border border-white/10 bg-[#141416] p-4">
-              <div className="font-semibold text-[#f6b40a]">{t}</div>
+              <div className="font-semibold text-[#f7bd31]">{t}</div>
               <p className="mt-1 text-sm text-[#a8a8a8]">{d}</p>
             </div>
           ))}
@@ -145,7 +145,7 @@ export default function SobrePage() {
         <div className="grid gap-2 sm:grid-cols-2">
           {AUTORIDADE.map((a) => (
             <div key={a} className="flex gap-2 text-sm text-[#dcdcdc]">
-              <span className="text-[#f6b40a]">◆</span>
+              <span className="text-[#f7bd31]">◆</span>
               {a}
             </div>
           ))}
@@ -153,7 +153,7 @@ export default function SobrePage() {
       </section>
 
       <section className="mx-auto max-w-[1140px] px-[clamp(20px,4vw,56px)] pb-20">
-        <div className="rounded-xl border border-[#f6b40a]/25 bg-[#141416] p-6 md:p-8">
+        <div className="rounded-xl border border-[#f7bd31]/25 bg-[#141416] p-6 md:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold uppercase">
             Por que aprender com Alexandre Brunelli?
           </h2>
@@ -166,17 +166,17 @@ export default function SobrePage() {
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {CHECKLIST.map((x) => (
               <div key={x} className="text-sm text-[#dcdcdc]">
-                <span className="mr-2 text-[#f6b40a]">✓</span>
+                <span className="mr-2 text-[#f7bd31]">✓</span>
                 {x}
               </div>
             ))}
           </div>
-          <blockquote className="mt-6 border-l-2 border-[#f6b40a] pl-4 text-[15px] italic leading-relaxed text-[#c8c8c8]">
+          <blockquote className="mt-6 border-l-2 border-[#f7bd31] pl-4 text-[15px] italic leading-relaxed text-[#c8c8c8]">
             “SAP EWM não se domina apenas decorando telas. Domina-se entendendo arquitetura, processo, integração e
             operação real — e aprendendo com quem vive projetos críticos, ensina SAP e traduz logística complexa em
             conhecimento prático.”
           </blockquote>
-          <Link href="/#modulos" className="btn mt-8 inline-flex">
+          <Link href="/modulos" className="btn mt-8 inline-flex">
             Aprender SAP EWM com Alexandre Brunelli
           </Link>
         </div>

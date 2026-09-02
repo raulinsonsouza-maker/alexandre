@@ -342,14 +342,14 @@ export function TransparentCheckout(props: {
         />
         <div className="relative">
           <p className="text-xs uppercase tracking-[0.16em] text-[#A8A8AF]">Resumo</p>
-          <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold text-[#F1C96B]">
+          <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold text-[#f7bd31]">
             {props.title}
           </h2>
           <p className="mt-3 text-3xl font-semibold text-white">{formatBRL(props.priceCents)}</p>
           <ul className="mt-6 space-y-2 text-sm text-[#A8A8AF]">
             {props.summaryLines.map((line) => (
               <li key={line} className="flex gap-2">
-                <span className="text-[#F1C96B]">•</span>
+                <span className="text-[#f7bd31]">•</span>
                 <span>{line}</span>
               </li>
             ))}
@@ -358,7 +358,7 @@ export function TransparentCheckout(props: {
             Conta: <span className="text-white">{props.userEmail}</span>
           </p>
           {method === "pix" && (
-            <p className="mt-4 rounded-lg border border-[#F1C96B]/30 bg-[#F1C96B]/10 px-3 py-2 text-sm text-[#F1C96B]">
+            <p className="mt-4 rounded-lg border border-[#f7bd31]/30 bg-[#f7bd31]/10 px-3 py-2 text-sm text-[#f7bd31]">
               Não feche esta página até o Pix ser confirmado.
             </p>
           )}
@@ -377,7 +377,7 @@ export function TransparentCheckout(props: {
               }}
               className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
                 method === m
-                  ? "bg-[#F1C96B] text-[#0a0a0c]"
+                  ? "bg-[#f7bd31] text-[#0a0a0c]"
                   : "border border-[#2a2d32] text-[#A8A8AF] hover:text-white"
               }`}
             >
@@ -441,7 +441,7 @@ export function TransparentCheckout(props: {
                     className="mx-auto h-52 w-52 rounded-lg bg-white p-2"
                   />
                 ) : null}
-                <p className="text-center text-sm text-[#F1C96B]">{pixStatus}</p>
+                <p className="text-center text-sm text-[#f7bd31]">{pixStatus}</p>
                 <label className="block text-xs text-[#A8A8AF]">
                   Copia e cola
                   <textarea

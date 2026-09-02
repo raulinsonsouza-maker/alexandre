@@ -31,7 +31,15 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
   const session = await auth();
   const plan = await prisma.plan.findUnique({
     where: { slug },
-    include: { _count: { select: { modules: true } } },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      published: true,
+      priceCents: true,
+      checkoutEnabled: true,
+      _count: { select: { modules: true } },
+    },
   });
   if (!plan || !plan.published) notFound();
 
@@ -72,10 +80,10 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(246,180,10,0.12),transparent_55%)]"
         />
         <div className="relative mx-auto max-w-[720px]">
-          <Link href="/planos" className="text-sm text-[#888] transition hover:text-[#f6b40a]">
+          <Link href="/planos" className="text-sm text-[#888] transition hover:text-[#f7bd31]">
             ← Todos os planos
           </Link>
-          <p className="mt-8 font-[family-name:var(--font-display)] text-[12px] font-bold uppercase tracking-[0.18em] text-[#f6b40a]">
+          <p className="mt-8 font-[family-name:var(--font-display)] text-[12px] font-bold uppercase tracking-[0.18em] text-[#f7bd31]">
             {copy.kicker}
           </p>
           <h1 className="mt-4 font-[family-name:var(--font-display)] text-[clamp(28px,4.5vw,48px)] font-bold leading-[1.05] tracking-tight">
@@ -86,7 +94,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
 
           <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-[family-name:var(--font-display)] text-[42px] leading-none text-[#f6b40a]">
+              <p className="font-[family-name:var(--font-display)] text-[42px] leading-none text-[#f7bd31]">
                 {priceLabel}
               </p>
               <p className="mt-2 text-sm text-[#888]">
@@ -114,7 +122,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
           <ul className="mt-8 space-y-0 divide-y divide-white/10 border-y border-white/10">
             {copy.outcomes.map((item) => (
               <li key={item} className="flex gap-4 py-4 text-[#d4d4d4]">
-                <span className="mt-0.5 shrink-0 text-[#f6b40a]" aria-hidden>
+                <span className="mt-0.5 shrink-0 text-[#f7bd31]" aria-hidden>
                   →
                 </span>
                 <span className="leading-relaxed">{item}</span>
@@ -136,7 +144,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
             {groups.map((group) => (
               <div key={group.title}>
                 {groups.length > 1 && (
-                  <h3 className="mb-4 font-[family-name:var(--font-display)] text-sm font-bold uppercase tracking-[0.14em] text-[#f6b40a]">
+                  <h3 className="mb-4 font-[family-name:var(--font-display)] text-sm font-bold uppercase tracking-[0.14em] text-[#f7bd31]">
                     {group.title}
                   </h3>
                 )}
@@ -146,7 +154,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
                       key={code}
                       className="mb-2.5 break-inside-avoid text-[15px] leading-snug text-[#cfcfcf]"
                     >
-                      <span className="mr-2 text-[#f6b40a]">✓</span>
+                      <span className="mr-2 text-[#f7bd31]">✓</span>
                       {titleByCode.get(code) || code}
                     </li>
                   ))}
@@ -166,7 +174,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
           <ol className="mt-10 grid gap-8 md:grid-cols-3">
             {copy.steps.map((s, i) => (
               <li key={s.title}>
-                <p className="font-[family-name:var(--font-display)] text-3xl text-[#f6b40a]/50">
+                <p className="font-[family-name:var(--font-display)] text-3xl text-[#f7bd31]/50">
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <h3 className="mt-2 text-lg font-semibold text-white">{s.title}</h3>
@@ -196,7 +204,7 @@ export default async function PlanSalesPage({ params }: { params: Promise<{ slug
             <p className="font-[family-name:var(--font-display)] text-[clamp(22px,3vw,30px)] font-bold leading-tight">
               {copy.closing}
             </p>
-            <p className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[#f6b40a]">
+            <p className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[#f7bd31]">
               {priceLabel}
             </p>
             <p className="mt-2 text-sm text-[#888]">

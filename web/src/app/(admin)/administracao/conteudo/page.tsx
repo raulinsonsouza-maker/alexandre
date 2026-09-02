@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { writeAudit } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
@@ -91,7 +91,7 @@ export default async function ConteudoPage() {
       {course && (
         <form action={updateCourse} className="panel mt-6 grid gap-3 md:grid-cols-2">
           <input type="hidden" name="id" value={course.id} />
-          <h2 className="md:col-span-2 text-lg font-semibold text-[#F1C96B]">Curso (container)</h2>
+          <h2 className="md:col-span-2 text-lg font-semibold text-[#f7bd31]">Curso (container)</h2>
           <div className="md:col-span-2">
             <label className="mb-1 block text-xs text-[#A8A8AF]">Título</label>
             <input className="input" name="title" defaultValue={course.title} required />
@@ -138,7 +138,7 @@ export default async function ConteudoPage() {
                   {m.category ? ` · ${m.category}` : ""}
                 </p>
                 <h2 className="text-lg font-semibold text-white">{m.title}</h2>
-                <p className="text-sm text-[#F1C96B]">R$ {(m.priceCents / 100).toFixed(2)}</p>
+                <p className="text-sm text-[#f7bd31]">R$ {(m.priceCents / 100).toFixed(2)}</p>
               </div>
             </div>
             <div className="flex gap-2">

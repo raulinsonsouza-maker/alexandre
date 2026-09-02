@@ -83,7 +83,7 @@ export default async function AdminPlanDetailPage({
 
   return (
     <div>
-      <Link href="/administracao/planos" className="text-sm text-[#A8A8AF] hover:text-[#F1C96B]">
+      <Link href="/administracao/planos" className="text-sm text-[#A8A8AF] hover:text-[#f7bd31]">
         ← Planos
       </Link>
       <h1 className="mt-2 text-3xl font-semibold text-white">Editar {plan.name}</h1>

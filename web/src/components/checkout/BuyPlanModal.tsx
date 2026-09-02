@@ -105,7 +105,7 @@ export function BuyPlanModal(props: {
       <div className="relative z-[1] max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/10 bg-[#141416] p-6 text-white shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-[#f6b40a]">Criar conta</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-[#f7bd31]">Criar conta</p>
             <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold uppercase">
               {props.itemName}
             </h2>
@@ -129,11 +129,11 @@ export function BuyPlanModal(props: {
             <input type="checkbox" name="lgpd" className="mt-1" required />
             <span>
               Li e aceito os{" "}
-              <Link href="/legal/termos" className="text-[#f6b40a]" target="_blank">
+              <Link href="/legal/termos" className="text-[#f7bd31]" target="_blank">
                 Termos
               </Link>{" "}
               e a{" "}
-              <Link href="/legal/privacidade" className="text-[#f6b40a]" target="_blank">
+              <Link href="/legal/privacidade" className="text-[#f7bd31]" target="_blank">
                 Privacidade
               </Link>
               .
@@ -198,7 +198,7 @@ export function BuyPlanButton(props: {
 
   return (
     <>
-      <button type="button" className="btn w-full sm:w-auto" onClick={onClick} disabled={loading}>
+      <button type="button" className="button button-primary" onClick={onClick} disabled={loading}>
         {loading ? "Redirecionando…" : props.label}
       </button>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
@@ -258,10 +258,7 @@ export function BuyModuleButton(props: {
 
   if (!props.checkoutEnabled) {
     return (
-      <Link
-        href="/planos"
-        className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c]"
-      >
+      <Link href="/planos" className="button button-primary">
         Ver planos
       </Link>
     );
@@ -271,7 +268,7 @@ export function BuyModuleButton(props: {
     <>
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded bg-[#f6b40a] px-8 py-3.5 text-base font-bold text-[#0a0a0c] disabled:opacity-60"
+        className="button button-primary"
         onClick={onClick}
         disabled={loading}
       >

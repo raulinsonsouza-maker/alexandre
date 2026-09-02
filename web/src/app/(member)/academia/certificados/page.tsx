@@ -10,7 +10,7 @@ export default async function CertificadosPage() {
   });
 
   return (
-    <div>
+    <div className="member-page">
       <h1 className="text-3xl font-semibold text-white">Certificados</h1>
       <p className="mt-2 text-[#A8A8AF]">Emitidos ao concluir todas as aulas de um módulo.</p>
       <div className="mt-8 space-y-3">
@@ -20,7 +20,7 @@ export default async function CertificadosPage() {
           const moduleCode = c.module?.code ? `${c.module.code} · ` : "";
           return (
             <div key={c.id} className="panel">
-              <h2 className="font-semibold text-[#F1C96B]">
+              <h2 className="font-semibold text-[#f7bd31]">
                 {moduleCode}
                 {moduleTitle}
               </h2>

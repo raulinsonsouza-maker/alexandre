@@ -1,17 +1,30 @@
 @import "tailwindcss";
+@import "./platform.css";
 
 :root {
-  --background: #0a0a0c;
-  --foreground: #f5f5f5;
-  --gold: #f1c96b;
-  --muted: #a8a8af;
-  --panel: #17151a;
-  --line: #2a2d32;
+  --background: #070708;
+  --foreground: #f7f7f8;
+  --gold: #f7bd31;
+  --gold-2: #ffcf61;
+  --gold-ink: #151005;
+  --muted: #aaaab2;
+  --muted-2: #73737c;
+  --panel: #141416;
+  --surface: #141416;
+  --surface-2: #1b1b1f;
+  --surface-3: #232329;
+  --line: rgba(255, 255, 255, 0.11);
+  --success: #45c77b;
+  --container: 1480px;
+  --gutter: clamp(20px, 4vw, 64px);
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.52);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-gold: var(--gold);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
 }
@@ -49,21 +62,34 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  gap: 10px;
+  border-radius: 9px;
   background: var(--gold);
-  padding: 0.625rem 1rem;
-  font-weight: 600;
-  color: #0a0a0c;
+  padding: 0.625rem 1.25rem;
+  font-weight: 700;
+  color: var(--gold-ink);
+  transition: transform 0.22s var(--ease), background 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--gold-2);
+  transform: translateY(-1px);
 }
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  border-radius: 9px;
   border: 1px solid var(--line);
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 1.25rem;
   color: var(--muted);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 .panel {

@@ -21,8 +21,16 @@ export function MarkCompleteButton({ lessonId, completed }: { lessonId: string; 
   }
 
   return (
-    <button className="btn" type="button" disabled={loading} onClick={toggle}>
-      {done ? "Aula concluída ✓" : "Marcar como concluída"}
+    <button
+      className={`lesson-complete${done ? " is-complete" : ""}`}
+      type="button"
+      disabled={loading}
+      onClick={toggle}
+    >
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="m4 10 4 4 8-9" />
+      </svg>
+      <span>{done ? "Concluída" : loading ? "Salvando…" : "Marcar como concluída"}</span>
     </button>
   );
 }

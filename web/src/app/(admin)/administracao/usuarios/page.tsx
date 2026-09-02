@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { writeAudit } from "@/lib/audit";
 import bcrypt from "bcryptjs";
@@ -116,7 +116,7 @@ export default async function AdminUsersPage({
   return (
     <div>
       <h1 className="text-3xl font-semibold text-white">Usuários</h1>
-      {sp.reset && <p className="mt-2 text-sm text-[#F1C96B]">Senha temporária: Trocar@123</p>}
+      {sp.reset && <p className="mt-2 text-sm text-[#f7bd31]">Senha temporária: Trocar@123</p>}
 
       <form className="mt-6 flex gap-2" action="/administracao/usuarios" method="get">
         <input className="input max-w-sm" name="q" defaultValue={q} placeholder="Buscar nome ou e-mail" />

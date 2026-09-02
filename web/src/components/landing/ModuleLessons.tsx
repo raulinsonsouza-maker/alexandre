@@ -25,7 +25,7 @@ export function ModuleLessons({ lessons }: { lessons: Lesson[] }) {
               <span className="flex-1 font-[family-name:var(--font-display)] text-lg font-semibold text-[#ececec]">
                 Aula {aula.n} — {aula.title}
               </span>
-              <span className={`shrink-0 text-[#f6b40a] transition ${isOpen ? "rotate-90" : ""}`}>▸</span>
+              <span className={`shrink-0 text-[#f7bd31] transition ${isOpen ? "rotate-90" : ""}`}>▸</span>
             </button>
             {isOpen && (
               <div className="border-t border-white/[0.06] px-5 py-4 text-sm leading-relaxed text-[#a8a8a8]">

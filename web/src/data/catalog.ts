@@ -23,6 +23,20 @@ export const CAT_ORDER = [
   "Transporte e Integrações",
 ] as const;
 
+export const TRACK_INTRO: Record<(typeof CAT_ORDER)[number], string> = {
+  "Boas-vindas e Fundamentos": "O ponto de partida: o que o EWM é, como se liga ao ERP e por onde o projeto começa.",
+  "Estrutura e Master Data": "Monte o armazém e os dados mestres que sustentam cada processo seguinte.",
+  Inbound: "Da doca ao bin: recebimento, conferência, ASR e o fluxo de entrada.",
+  Outbound: "Picking, packing, ondas e expedição — a saída com método.",
+  "Processos Internos do Armazém": "Inventário, tarefas, ordens, estratégias e recursos no dia a dia do depósito.",
+  "Produção e Manufatura": "Abastecimento de linha, WIP, JIT, MES e a ponte entre armazém e chão de fábrica.",
+  "Qualidade e Compliance": "Série, lote e QM — rastreabilidade e bloqueio no fluxo do armazém.",
+  "RF, Automação e Identificação": "Coletor, HU, RFID e unidades de medida: executar na operação, não só na tela.",
+  "Serviços e Distribuição": "VAS, distribuição interna e trânsito entre pontos logísticos.",
+  "Analytics e Billing": "Produtividade, indicadores e faturamento do armazém.",
+  "Transporte e Integrações": "Doca, TM e MFS — o armazém conectado ao transporte e à automação.",
+};
+
 const RAW: [string, string, string, string, number][] = [
   ["00 - ERP x EWM Basis Linkage.png", "ERP x EWM Basis Linkage", "Boas-vindas e Fundamentos", "Conecte ERP e EWM na camada Basis e domine a comunicação qRFC, o CIF e a arquitetura que sustenta toda a operação do armazém.", 317.79],
   ["01 - Migration from Logistic Execution Warehouse Management.png", "Migration LE-WM to EWM", "Boas-vindas e Fundamentos", "Planeje e execute a migração do WM clássico para o SAP EWM com gap analysis, estratégia e boas práticas de transição.", 424.79],

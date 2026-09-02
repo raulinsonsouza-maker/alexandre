@@ -17,7 +17,7 @@ export const PAGE_GAP = [
   { proto: "Sobre.dc.html", next: "/sobre", status: "ok", note: "Site · institucional" },
   { proto: "Contato.dc.html", next: "/contato", status: "ok", note: "Site · institucional" },
   { proto: "Empresas.dc.html", next: "/empresas", status: "ok", note: "Site · B2B" },
-  { proto: "Categorias.dc.html", next: "/#modulos", status: "ok", note: "Site · vitrine" },
+  { proto: "Categorias.dc.html", next: "/modulos", status: "ok", note: "Site · catálogo de módulos" },
   { proto: "Blog.dc.html", next: "/blog + /blog/[slug]", status: "ok", note: "Site · blog" },
   { proto: "EWM Basics/Pro/Premium", next: "/planos", status: "ok", note: "Site · planos" },
   { proto: "Termos/Privacidade", next: "/legal/termos + /legal/privacidade", status: "parcial", note: "Legal" },

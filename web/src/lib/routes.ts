@@ -5,7 +5,7 @@ export const routes = {
   blog: "/blog",
   blogPost: (slug: string) => `/blog/${slug}`,
   modulo: (slug: string) => `/modulos/${slug}`,
-  modulosHash: "/#modulos",
+  modulos: "/modulos",
   sobre: "/sobre",
   empresas: "/empresas",
   contato: "/contato",

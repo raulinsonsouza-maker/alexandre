@@ -73,7 +73,7 @@ export function LessonUploadForm({
       <button className="btn" type="submit" disabled={loading}>
         {loading ? "Enviando..." : "Salvar mídia / material"}
       </button>
-      {msg && <p className="text-sm text-[#F1C96B]">{msg}</p>}
+      {msg && <p className="text-sm text-[#f7bd31]">{msg}</p>}
     </form>
   );
 }

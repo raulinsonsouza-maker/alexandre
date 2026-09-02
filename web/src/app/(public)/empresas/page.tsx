@@ -105,12 +105,12 @@ export default function EmpresasPage() {
   return (
     <div className="bg-[#0a0a0c] text-white">
       <section className="mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)] pb-12 pt-16">
-        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f7bd31]">
           Jornada SAP EWM Academy · Corporativo
         </span>
         <h1 className="mt-3 max-w-4xl font-[family-name:var(--font-display)] text-[clamp(30px,4.5vw,52px)] font-bold uppercase leading-tight">
           Capacite sua equipe em SAP EWM com uma formação prática, profunda e orientada a{" "}
-          <span className="text-[#f6b40a]">projetos reais</span>
+          <span className="text-[#f7bd31]">projetos reais</span>
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[#cfcfcf]">
           Uma trilha estruturada para formar consultores, key users, líderes operacionais, analistas de logística,
@@ -118,7 +118,7 @@ export default function EmpresasPage() {
           SAP EWM, organizada por módulos, trilhas, progresso, certificados e gestão corporativa.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <a href="#form" className="rounded bg-[#f6b40a] px-6 py-3 font-bold text-[#0a0a0c]">
+          <a href="#form" className="rounded bg-[#f7bd31] px-6 py-3 font-bold text-[#0a0a0c]">
             Solicitar proposta corporativa
           </a>
           <a href="#trilhas" className="rounded border border-white/20 px-6 py-3 font-semibold">
@@ -138,7 +138,7 @@ export default function EmpresasPage() {
         <div className="grid gap-3 md:grid-cols-2">
           {DESAFIOS.map(([d, i]) => (
             <div key={d} className="rounded-lg border border-white/10 bg-[#141416] p-4">
-              <div className="font-semibold text-[#f6b40a]">{d}</div>
+              <div className="font-semibold text-[#f7bd31]">{d}</div>
               <p className="mt-1 text-sm text-[#a8a8a8]">{i}</p>
             </div>
           ))}
@@ -153,7 +153,7 @@ export default function EmpresasPage() {
           A empresa pode contratar acessos para seus colaboradores e acompanhar a evolução da equipe por meio de
           trilhas de aprendizagem, módulos técnicos, progresso individual, certificados e relatórios.
         </p>
-        <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#f6b40a]">Para quem se aplica</p>
+        <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#f7bd31]">Para quem se aplica</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {PUBLICOS.map(([t, d]) => (
             <div key={t} className="rounded-lg border border-white/10 bg-[#141416] p-4">
@@ -166,12 +166,12 @@ export default function EmpresasPage() {
 
       <section className="mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)] pb-16">
         <h2 className="mb-6 font-[family-name:var(--font-display)] text-[clamp(26px,3vw,40px)] font-bold uppercase">
-          O que sua empresa <span className="text-[#f6b40a]">ganha</span>
+          O que sua empresa <span className="text-[#f7bd31]">ganha</span>
         </h2>
         <div className="grid gap-3 md:grid-cols-2">
           {BENEFICIOS.map(([t, d]) => (
             <div key={t} className="rounded-lg border border-white/10 bg-[#141416] p-4">
-              <div className="font-semibold text-[#f6b40a]">{t}</div>
+              <div className="font-semibold text-[#f7bd31]">{t}</div>
               <p className="mt-1 text-sm text-[#a8a8a8]">{d}</p>
             </div>
           ))}
@@ -180,7 +180,7 @@ export default function EmpresasPage() {
 
       <section id="trilhas" className="mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)] pb-16">
         <h2 className="mb-6 font-[family-name:var(--font-display)] text-[clamp(26px,3vw,40px)] font-bold uppercase">
-          Trilhas de <span className="text-[#f6b40a]">capacitação</span>
+          Trilhas de <span className="text-[#f7bd31]">capacitação</span>
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
           {TRILHAS.map((t) => (
@@ -189,7 +189,7 @@ export default function EmpresasPage() {
               <p className="mt-2 text-sm text-[#a8a8a8]">{t.for}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {t.mods.map((m) => (
-                  <span key={m} className="rounded border border-[#f6b40a]/25 bg-[#f6b40a]/10 px-2 py-1 text-xs text-[#f6b40a]">
+                  <span key={m} className="rounded border border-[#f7bd31]/25 bg-[#f7bd31]/10 px-2 py-1 text-xs text-[#f7bd31]">
                     {m}
                   </span>
                 ))}
@@ -210,7 +210,7 @@ export default function EmpresasPage() {
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {GESTAO.map((g) => (
             <div key={g} className="rounded-lg border border-white/10 bg-[#141416] px-4 py-3 text-sm text-[#dcdcdc]">
-              <span className="mr-2 text-[#f6b40a]">✓</span>
+              <span className="mr-2 text-[#f7bd31]">✓</span>
               {g}
             </div>
           ))}
@@ -228,7 +228,7 @@ export default function EmpresasPage() {
         </div>
         <p className="mt-6 text-sm text-[#a8a8a8]">
           Conduzida por Alexandre Brunelli.{" "}
-          <Link href="/sobre" className="text-[#f6b40a]">
+          <Link href="/sobre" className="text-[#f7bd31]">
             Conheça o instrutor →
           </Link>
         </p>
@@ -236,15 +236,15 @@ export default function EmpresasPage() {
 
       <section id="form" className="mx-auto max-w-[720px] px-[clamp(20px,4vw,56px)] pb-16">
         <h2 className="font-[family-name:var(--font-display)] text-[clamp(26px,3vw,40px)] font-bold uppercase">
-          Solicite uma proposta <span className="text-[#f6b40a]">corporativa</span>
+          Solicite uma proposta <span className="text-[#f7bd31]">corporativa</span>
         </h2>
         <p className="mt-3 text-[#a8a8a8]">
           Sua empresa utiliza SAP EWM ou está se preparando para implantar, expandir ou sustentar a solução? Conte um
           pouco sobre sua necessidade e retornaremos com o melhor modelo.
         </p>
         {sent ? (
-          <div className="mt-8 rounded-xl border border-[#f6b40a]/30 bg-[#141416] p-6">
-            <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold uppercase text-[#f6b40a]">
+          <div className="mt-8 rounded-xl border border-[#f7bd31]/30 bg-[#141416] p-6">
+            <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold uppercase text-[#f7bd31]">
               Solicitação recebida
             </h3>
             <p className="mt-3 text-[#cfcfcf]">
@@ -294,7 +294,7 @@ export default function EmpresasPage() {
             </button>
             <p className="text-xs text-[#7e7e84]">
               Ao enviar, você concorda com nossa{" "}
-              <Link href="/legal/privacidade" className="text-[#f6b40a]">
+              <Link href="/legal/privacidade" className="text-[#f7bd31]">
                 Política de Privacidade
               </Link>
               .
@@ -305,7 +305,7 @@ export default function EmpresasPage() {
 
       <section className="mx-auto max-w-[900px] px-[clamp(20px,4vw,56px)] pb-20">
         <h2 className="mb-6 font-[family-name:var(--font-display)] text-[clamp(26px,3vw,40px)] font-bold uppercase">
-          FAQ <span className="text-[#f6b40a]">Empresas</span>
+          FAQ <span className="text-[#f7bd31]">Empresas</span>
         </h2>
         <div className="space-y-2">
           {FAQ.map(([q, a], i) => {
@@ -318,7 +318,7 @@ export default function EmpresasPage() {
                   onClick={() => setOpenFaq(open ? null : i)}
                 >
                   <span className="font-semibold text-[#e2e2e2]">{q}</span>
-                  <span className="text-[#f6b40a]">{open ? "–" : "+"}</span>
+                  <span className="text-[#f7bd31]">{open ? "–" : "+"}</span>
                 </button>
                 {open && <div className="border-t border-white/10 px-4 py-4 text-sm leading-relaxed text-[#a8a8a8]">{a}</div>}
               </div>

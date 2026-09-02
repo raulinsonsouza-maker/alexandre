@@ -53,7 +53,7 @@ export function ModuleCoverUpload({
           {loading ? "Enviando..." : "Enviar capa"}
         </button>
       </form>
-      {msg && <p className="text-sm text-[#F1C96B]">{msg}</p>}
+      {msg && <p className="text-sm text-[#f7bd31]">{msg}</p>}
     </div>
   );
 }

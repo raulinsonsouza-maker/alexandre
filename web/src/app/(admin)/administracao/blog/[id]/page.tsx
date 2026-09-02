@@ -46,7 +46,7 @@ export default async function AdminBlogEditPage({
 
   return (
     <div>
-      <Link href="/administracao/blog" className="text-sm text-[#A8A8AF] hover:text-[#F1C96B]">
+      <Link href="/administracao/blog" className="text-sm text-[#A8A8AF] hover:text-[#f7bd31]">
         ← Blog
       </Link>
       <h1 className="mt-2 text-3xl font-semibold text-white">Editar post</h1>

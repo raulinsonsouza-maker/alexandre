@@ -80,11 +80,11 @@ export default async function CadastroPage({
           <input type="checkbox" name="lgpd" className="mt-1" required />
           <span>
             Li e aceito os{" "}
-            <Link href="/legal/termos" className="text-[#F1C96B]">
+            <Link href="/legal/termos" className="text-[#f7bd31]">
               Termos
             </Link>{" "}
             e a{" "}
-            <Link href="/legal/privacidade" className="text-[#F1C96B]">
+            <Link href="/legal/privacidade" className="text-[#f7bd31]">
               Privacidade
             </Link>
             .

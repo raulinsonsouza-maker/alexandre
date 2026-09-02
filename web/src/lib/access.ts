@@ -86,6 +86,7 @@ export type AccessibleModule = {
   code: string;
   slug: string;
   title: string;
+  description: string | null;
   coverPath: string | null;
   category: string | null;
   published: boolean;

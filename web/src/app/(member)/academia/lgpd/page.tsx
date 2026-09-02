@@ -20,12 +20,12 @@ async function deleteAccount() {
 export default async function LgpdPage() {
   await requireSession();
   return (
-    <div className="max-w-xl space-y-8">
+    <div className="member-page max-w-xl space-y-8">
       <div>
         <h1 className="text-3xl font-semibold text-white">LGPD</h1>
         <p className="mt-2 text-[#A8A8AF]">
           Exporte ou exclua seus dados pessoais, conforme a{" "}
-          <Link href="/legal/privacidade" className="text-[#F1C96B]">
+          <Link href="/legal/privacidade" className="text-[#f7bd31]">
             Política de privacidade
           </Link>
           .

@@ -12,7 +12,7 @@ export default async function BlogPage() {
   return (
     <div className="bg-[#0a0a0c] px-[clamp(20px,4vw,56px)] py-16 text-white">
       <div className="mx-auto max-w-[1100px]">
-        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f6b40a]">
+        <span className="font-[family-name:var(--font-display)] text-[13px] font-bold uppercase tracking-[0.16em] text-[#f7bd31]">
           Blog
         </span>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-[clamp(32px,4vw,52px)] font-bold uppercase">
@@ -40,9 +40,9 @@ export default async function BlogPage() {
             <Link
               key={p.id}
               href={`/blog/${p.slug}`}
-              className="rounded-xl border border-white/10 bg-[#141416] p-6 transition hover:border-[#f6b40a]/50"
+              className="rounded-xl border border-white/10 bg-[#141416] p-6 transition hover:border-[#f7bd31]/50"
             >
-              <p className="text-xs uppercase tracking-wide text-[#f6b40a]">
+              <p className="text-xs uppercase tracking-wide text-[#f7bd31]">
                 {p.category || "Geral"}
                 {p.publishedAt
                   ? ` · ${p.publishedAt.toLocaleDateString("pt-BR")}`
@@ -52,15 +52,15 @@ export default async function BlogPage() {
                 {p.title}
               </h2>
               {p.excerpt && <p className="mt-2 text-sm leading-relaxed text-[#a8a8a8]">{p.excerpt}</p>}
-              <span className="mt-4 inline-block text-sm font-bold text-[#f6b40a]">Ler artigo →</span>
+              <span className="mt-4 inline-block text-sm font-bold text-[#f7bd31]">Ler artigo →</span>
             </Link>
           ))}
         </div>
 
-        <div id="newsletter" className="mt-14 rounded-xl border border-[#f6b40a]/25 bg-[#141416] p-8 text-center">
+        <div id="newsletter" className="mt-14 rounded-xl border border-[#f7bd31]/25 bg-[#141416] p-8 text-center">
           <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold">Newsletter</h2>
           <p className="mt-2 text-sm text-[#a8a8a8]">Em breve — cadastre-se pelo contato.</p>
-          <Link href="/contato" className="mt-4 inline-block rounded bg-[#f6b40a] px-6 py-2.5 text-sm font-bold text-[#0a0a0c]">
+          <Link href="/contato" className="mt-4 inline-block rounded bg-[#f7bd31] px-6 py-2.5 text-sm font-bold text-[#0a0a0c]">
             Falar conosco
           </Link>
         </div>
