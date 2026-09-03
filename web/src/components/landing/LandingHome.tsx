@@ -138,7 +138,7 @@ export function LandingHome({
   const title = heroTitle || "Pare de adivinhar na tela do SAP EWM";
   const description =
     heroSubtitle ||
-    "Formação prática para consultores e key users que precisam entregar no SAP EWM — do primeiro acesso ao desenho completo do armazém.";
+    "Formação prática para consultores e key users — do primeiro acesso ao desenho completo do armazém.";
   const featuredPlan = plans.find((p) => p.badge?.toLowerCase().includes("recomend")) ?? plans.find((p) => p.slug === "pro");
 
   return (

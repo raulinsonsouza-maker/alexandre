@@ -386,8 +386,9 @@ async function main() {
   }
 
   const settings: Record<string, string> = {
-    hero_title: "Domine SAP EWM com a Jornada completa",
-    hero_subtitle: "Módulos práticos, planos sob medida e área de membros com progresso.",
+    hero_title: "Pare de adivinhar na tela do SAP EWM",
+    hero_subtitle:
+      "Formação prática para consultores e key users — do primeiro acesso ao desenho completo do armazém.",
     whatsapp_url: WA,
     contact_email: "contato@jornadaewm.com.br",
   };
